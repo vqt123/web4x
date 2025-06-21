@@ -115,10 +115,18 @@ Day 3, 14:23 | Action Points: 23/40
 ## Development Approach
 
 ### Philosophy
-- Start simple with core action loop
-- Test pacing extensively before adding features
-- Build connected experience, not isolated features
-- Focus intensely on first session perfection
+- **5-Minute Chunks**: Build and perfect the game in 5-minute increments
+- **Discovery Phase First**: Perfect minutes 0-5 before moving to 5-10
+- **Validate Each Phase**: Don't proceed until current phase is engaging
+- **Tight Feedback Loops**: Test each 5-minute chunk extensively
+- **Connected Experience**: Each chunk must flow naturally to the next
+
+### Development Phases
+1. **Minutes 0-5**: Discovery Phase - Movement, exploration, terrain reveal
+2. **Minutes 5-10**: Decision Phase - Settlement site selection
+3. **Minutes 10-15**: Foundation Phase - Settlement placement and first production
+4. **Minutes 15-20**: Planning Phase - Resource management and expansion planning
+5. **Minutes 20-30**: Engagement Hook - First conflict or major discovery
 
 ### Technical Considerations
 - Browser-based for accessibility
