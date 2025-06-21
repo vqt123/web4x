@@ -31,6 +31,11 @@ pids
 # Testing
 coverage/
 .nyc_output/
+screenshots/
+*.png
+*.jpg
+*.jpeg
+test-report.json
 
 # Production builds
 dist/
