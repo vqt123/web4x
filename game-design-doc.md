@@ -3,6 +3,8 @@
 ## Core Concept
 A turn-based, action-per-time based web 4X game inspired by RTS mechanics, designed to be played over a 2-week period with multiple short sessions per day. The game abstracts away spatial elements, focusing on resource capacity discovery and development through strategic action point allocation.
 
+**Current Implementation Status**: Phase 1 Enhanced - Core mechanics with resource management and debug tools complete.
+
 ## Game Duration & Pacing
 - **Total Game Length**: 14 days per match
 - **Daily Sessions**: 3-4 times per day
@@ -38,14 +40,15 @@ A turn-based, action-per-time based web 4X game inspired by RTS mechanics, desig
 
 ## First 30 Minutes - Critical Opening Session
 
-### Minutes 0-5: Discovery Phase
+### Minutes 0-5: Discovery Phase ✅ IMPLEMENTED
 - Start with base generation: Food 5/hr, Production 3/hr, Gold 1/hr
-- Each resource shows current/capacity (e.g., "Food: 5/5")
+- Resources display: "Food: 10/50 (+5/Hr 5/Hr Max)" format
 - **Explore Action** (5 AP): Roll for capacity increase
   - 60%: +1 Food capacity
   - 30%: +1 Production capacity  
   - 10%: +1 Gold capacity
-- **Develop Action** (10 AP): Convert capacity to generation (2-hour timer)
+- **Develop Action** (10 AP): Convert capacity to generation (auto-completing timer)
+- **Expand Storage** (20 AP): Increase resource storage caps by +20
 - Make 10-15 meaningful decisions about exploration vs development
 
 ### Minutes 5-10: Strategic Development
@@ -75,16 +78,18 @@ A turn-based, action-per-time based web 4X game inspired by RTS mechanics, desig
 - **Trade Deals**: 1 hour (resource conversion agreements)
 - **Design Intent**: Creates anticipation and planning opportunities
 
-### Resource System
+### Resource System ✅ IMPLEMENTED
 - **Basic Resources**: Food, Production, Gold
 - **Capacity vs Generation**: 
   - Capacity = Maximum possible generation (increased through exploration)
   - Generation = Actual per-hour income (increased through development)
-- **Starting Values**:
-  - Food: 5/hr (5 capacity)
-  - Production: 3/hr (3 capacity)
-  - Gold: 1/hr (1 capacity)
+  - Storage Cap = Maximum resource accumulation (expandable)
+- **Starting Values** (see @game-config.json):
+  - Food: 10 amount, 5/hr generation, 5 capacity, 50 storage cap
+  - Production: 6 amount, 3/hr generation, 3 capacity, 30 storage cap
+  - Gold: 2 amount, 1/hr generation, 1 capacity, 20 storage cap
 - **Growth Example**: Explore → Food capacity 5→6, then Develop → Food generation 5→6/hr
+- **Storage Management**: Resources cap at storage limit, expansion available for +20 capacity
 
 ### End Game & Scoring
 - **Leaderboard-based**: No elimination or bankruptcy
@@ -100,26 +105,29 @@ A turn-based, action-per-time based web 4X game inspired by RTS mechanics, desig
 
 ## User Interface Design
 
-### MVP Approach: Text-Based
+### Current Implementation: Text-Based ✅
 ```
-Day 3, 14:23 | Action Points: 23/40
+Day 1, 00:05:23                           DEBUG MODE: 3600x
+Action Points: 142/250                    Tick: 323
+                                          Session: 45s
 
-=== Resources (per hour) ===
-Food: 23/28 capacity (+23/hr)
-Production: 18/22 capacity (+18/hr) 
-Gold: 12/15 capacity (+12/hr)
+Resources
+Food: 25/50 (+5/Hr 8/Hr Max)
+Production: 18/30 (+3/Hr 6/Hr Max)
+Gold: 12/20 (+1/Hr 4/Hr Max)
 
-=== Active Timers ===
-- Farm Development completes in 1h 15m (+3 Food/hr)
-- Efficiency Research completes in 3h 30m (1.2x multiplier)
-- Trade Deal with Player 2 expires in 5h
+Active Developments
+Food development: 0:00:07
 
-=== Actions ===
-[1] Explore (5 AP) - Discover new capacity
-[2] Develop (10 AP) - Increase generation
-[3] Research (15 AP) - Improve efficiency
-[4] Trade (8 AP) - Exchange resources
+[EXPLORE - 5 AP]  [DEVELOP - 10 AP]  [EXPAND STORAGE - 20 AP]  [DEBUG MODE]
 ```
+
+**Key UI Features Implemented**:
+- Wall clock showing game time progression
+- Debug panel with speed mode and tick counter
+- Resource format: current/cap (+generation/Hr capacity/Hr Max)
+- Auto-completing timers
+- Action point regeneration display
 
 ### Benefits of Text-First Development
 - Rapid iteration on mechanics
@@ -151,14 +159,17 @@ Gold: 12/15 capacity (+12/hr)
 - Notification system for completed actions
 - Mobile-friendly interface essential
 
-### Implementation Priorities
-1. Core action point system with regeneration
-2. Exploration action with capacity discovery
-3. Development action with timers
-4. Resource display (capacity/generation)
-5. Research and efficiency multipliers
-6. Trading and resource conversion
-7. Other players, competition, advanced features
+### Implementation Status
+1. ✅ Core action point system with regeneration
+2. ✅ Exploration action with capacity discovery
+3. ✅ Development action with auto-completing timers
+4. ✅ Resource display (capacity/generation/storage)
+5. ✅ Storage expansion mechanics
+6. ✅ Debug speed mode for testing
+7. ✅ Tick-based architecture
+8. 🔄 Research and efficiency multipliers (planned)
+9. 🔄 Trading and resource conversion (planned)
+10. 🔄 Other players, competition, advanced features (planned)
 
 ## Game Progression Timeline
 
@@ -197,23 +208,56 @@ Gold: 12/15 capacity (+12/hr)
 6. **Inclusive Competition**: Leaderboard focus means everyone can play to the end
 7. **Positive Reinforcement**: No elimination or bankruptcy - always moving forward
 
-## Next Steps
+## Implementation Notes
 
-1. Build MVP focusing on first 30-minute experience
-2. Test action point economy and regeneration rates
-3. Validate that micro-decisions feel engaging
-4. Iterate on timer durations for actions
-5. Only after core loop is fun, add additional features
+**Configuration**: All balance parameters are defined in `@game-config.json`
 
-## Open Questions for Iteration
+**Architecture**: Tick-based system with 1 tick = 1 second game time
+- Normal mode: 1 tick processed per second
+- Debug mode: 3600 ticks processed per second (1 hour game time = 1 real second)
 
-- Exact combat resolution mechanics
-- Diplomacy system depth
-- Technology tree design
-- Mid and late game pacing
-- Victory condition balance
-- Player elimination vs. comeback mechanics
+**Current Testing Focus**:
+1. ✅ Core loop validation (explore→develop)
+2. ✅ Resource management balance (caps, expansion)
+3. 🔄 Extended session engagement
+4. 🔄 Action point regeneration balance
+5. 🔄 Storage expansion economics
+
+## Next Development Phases
+1. **Research System**: 15 AP action with efficiency multipliers
+2. **Trading Mechanics**: Resource conversion and player interaction
+3. **Competition Elements**: Leaderboards and comparative progress
+4. **Advanced Actions**: Late-game mechanics and mega-projects
+
+## Current Balance Questions
+
+**Resource Management**:
+- Are starting storage caps (50/30/20) appropriate?
+- Is storage expansion cost (20 AP for +20) balanced?
+- Should storage caps scale differently per resource type?
+
+**Action Point Economy**:
+- Is 10 AP/hour regeneration with 250 cap optimal?
+- Are action costs (5/10/20 AP) creating good decisions?
+- How does debug mode affect balance testing?
+
+**Timer Balance**:
+- Should development be 2 hours in production vs 10 seconds testing?
+- What's the optimal timer length for engagement hooks?
+
+**Future Design Questions**:
+- Research system implementation (efficiency multipliers)
+- Trading mechanics design
+- Competition and leaderboard systems
+- Mid and late game progression
+- Multiplayer interaction depth
 
 ---
 
-*This document represents the current design vision. Many details, especially mid and late game mechanics, will be refined through playtesting and iteration.*
+## Configuration Reference
+See `@game-config.json` for all balance parameters, action costs, and timer durations.
+
+## Development Reference
+See `@development-plan.md` for implementation phases, testing protocols, and architecture decisions.
+
+*This document represents the current design vision. Balance parameters are externalized to game-config.json for easy iteration.*

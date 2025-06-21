@@ -2,8 +2,10 @@
 
 ## Current Status
 - Date: 2025-06-21
-- Phase: ✅ Phase 1 COMPLETE - Core MVP Implemented
-- Next Goal: Test 5-minute experience and gather feedback
+- Phase: ✅ Phase 1 ENHANCED - Tick-based architecture with resource management
+- Status: Core mechanics working, ready for extended testing
+- Next Goal: Extended session testing and next feature implementation
+- Configuration: All balance parameters in @game-config.json
 
 ## Phase 1: Minutes 0-5 - Discovery Phase
 
@@ -11,20 +13,20 @@
 **Goal**: Create an engaging first 5 minutes where players understand the core loop of exploration → capacity → development
 
 **Player Experience Target**:
-- Spend ~20-30 AP
-- Make 10-15 meaningful decisions
-- Perform 4-6 explore actions
-- Start 1-2 developments
+- Spend portion of starting AP pool
+- Make multiple meaningful decisions
+- Perform several explore actions
+- Start developments
 - See clear resource growth potential
 - End with excitement about optimization
 
 ### Step 1.1: Core UI & Resource Display ✅
 **Implementation**:
 - [x] Create index.html with minimal UI
-- [x] Display: "Action Points: 150" at top
-- [x] Show resources: "Food: 15 (+5/hr) | Production: 9 (+3/hr) | Gold: 3 (+1/hr)"
+- [x] Display action points at top
+- [x] Show resources with generation rates
 - [x] Format: "current amount (+generation/hr)" with auto-updates
-- [x] Big "Explore" button (5 AP cost shown)
+- [x] Action buttons with costs shown
 
 **Success Criteria**: ✅ ACHIEVED
 - Resources display clearly with generation rates
@@ -32,9 +34,9 @@
 
 ### Step 1.2: First Exploration ✅
 **Implementation**:
-- [x] Click "Explore": Deduct 5 AP (150 → 145)
-- [x] Roll discovery with 60/30/10% distribution (food/production/gold)
-- [x] Result popup: "Fertile lands discovered! Food generation capacity +1"
+- [x] Click "Explore": Deduct AP cost
+- [x] Roll discovery with configured distribution rates
+- [x] Result popup with thematic discovery messages
 - [x] Update capacity for future development
 - [x] Clear explanation of capacity vs generation
 
@@ -47,8 +49,8 @@
 - [x] "Develop" button always visible with clear description
 - [x] Tooltip: "Build infrastructure to increase resource generation rate"
 - [x] Click Develop: Choose from available resources with capacity > generation
-- [x] Cost 10 AP, start 2-hour timer (10s for testing)
-- [x] Show: "Food development: 0:00:09" with real-time countdown
+- [x] Start timer with configured duration
+- [x] Show development progress with real-time countdown
 
 **Success Criteria**: ✅ ACHIEVED
 - Clear explore → develop loop understanding
@@ -56,11 +58,11 @@
 
 ### Step 1.4: Strategic Decisions ✅
 **Implementation**:
-- [x] Continue exploring: All 3 resource types discoverable
-- [x] Discovery log shows timestamped history: "13:45:23: Explored and found food capacity +1"
+- [x] Continue exploring: All resource types discoverable
+- [x] Discovery log shows timestamped history
 - [x] Multiple explore/develop cycles create capacity gaps
 - [x] Decision point: Develop accumulated capacity or keep exploring?
-- [x] AP regeneration (not yet implemented - future feature)
+- [x] AP regeneration implemented with tick system
 
 **Success Criteria**: ✅ ACHIEVED
 - Clear tension between exploration and development
@@ -75,7 +77,7 @@
 - [x] End state: Multiple developments possible, clear progression
 
 **Success Criteria**: 🔄 PARTIALLY ACHIEVED
-- [x] Players can spend 25-35 AP easily
+- [x] Players can spend meaningful portion of AP easily
 - [x] Multiple timers can run simultaneously
 - [x] Timer completion creates return motivation
 - [x] Core loop completely functional
@@ -85,8 +87,34 @@
 - Preview of research unlock
 - Multiplayer leaderboard preview
 
+## ✅ MAJOR ENHANCEMENTS COMPLETED
+
+### Phase 1.6: Tick-Based Architecture ✅
+**Implementation**:
+- [x] Redesigned entire game to use tick-based time system
+- [x] Clean time management with configurable rates
+- [x] Action Point regeneration: per-tick calculation
+- [x] Resource generation: per-tick accumulation with caps
+- [x] Auto-completing timers (no manual collection needed)
+
+### Phase 1.7: Resource Management System ✅
+**Implementation**:
+- [x] Storage caps per resource type (configurable)
+- [x] Resources can't exceed storage limits
+- [x] Storage expansion action with configurable costs/benefits
+- [x] Clear UI format: "current/cap (+generation/Hr capacity/Hr Max)"
+- [x] Explore increases "Max", Develop increases current generation
+
+### Phase 1.8: Debug & Time Systems ✅
+**Implementation**:
+- [x] Debug mode: Configurable speed acceleration
+- [x] Wall clock: Game time display always visible
+- [x] Session timer: Real-world time tracking
+- [x] Always-visible debug panel with tick counter
+- [x] Clean speed toggle with visual indicators
+
 ### What We're NOT Building Yet:
-- Research system
+- Research system (efficiency multipliers)
 - Trading mechanics
 - Resource conversion
 - Other players' actions
@@ -94,19 +122,19 @@
 - Advanced developments
 - Mega projects
 
-### Testing Protocol for 5-Minute Session:
-1. **Fresh User Test**: No instructions except "Play"
-2. **Measure**:
-   - Time to first action
-   - Number of explores done
-   - Capacity vs generation understanding
-   - Development decisions made
-   - Where they stop/get confused
-3. **Success Metrics**:
-   - Complete in 4-6 minutes
-   - Start at least 1 development
-   - Want to return when timer completes
-   - No confusion about capacity/generation
+### Testing Protocol for Extended Sessions:
+1. **5-Minute Session**: Core loop validation
+   - Explore/develop understanding clear
+   - Resource caps create decisions
+   - Debug mode enables rapid testing
+2. **30-Minute Session**: Resource management testing
+   - Storage expansion decisions
+   - AP regeneration balance
+   - Multiple timer management
+3. **2-Hour Session**: Long-term pacing validation
+   - Session return hooks
+   - Progress satisfaction
+   - Capacity vs generation balance
 
 ## Future Phases (High Level Only)
 
@@ -161,38 +189,57 @@
 ## Technical Decisions Log
 
 ### Decided:
-- Start with vanilla HTML/CSS/JavaScript
-- Use LocalStorage for persistence
-- Text-based UI initially
-- All timers in real-time
+- ✅ **Tick-Based Architecture**: Clean time management foundation
+- ✅ **Debug Speed Mode**: Configurable acceleration for testing
+- ✅ **Resource Caps**: Storage limits with expansion mechanics
+- ✅ **Auto-Timers**: Automatic completion, no manual collection
+- ✅ **Action Point Regeneration**: Configurable rates and caps
+- ✅ **Always-Visible Time**: Wall clock and debug info persistent
+- ✅ **Single HTML File**: Proven architecture for MVP testing
+- ✅ **Text-Based UI**: Clean, focused on mechanics over graphics
+- ✅ **External Configuration**: Balance parameters in game-config.json
 
 ### To Decide:
 - [ ] Server architecture for multiplayer
-- [ ] Database choice
-- [ ] Framework for final UI
-- [ ] Notification system approach
+- [ ] Database choice for persistence
+- [ ] Research system implementation
+- [ ] Trading mechanics design
+- [ ] Framework migration (if needed)
+- [ ] LocalStorage persistence implementation
 
 ## Questions to Answer Through Testing
 
-1. **Is 30 seconds per tile movement too fast/slow?**
-2. **Should examine tile be free or cost 1 AP?**
-3. **Is 150 starting AP too much/little?**
-4. **Should settlements take 2 hours or less?**
-5. **How many actions before players feel "done" with a session?**
+1. **Storage Cap Balance**: Are current storage caps appropriate?
+2. **AP Regeneration**: Is regeneration rate balanced with action costs?
+3. **Development Timer**: Optimal timer duration for production?
+4. **Storage Expansion Cost**: Is expansion cost/benefit balanced?
+5. **Resource Discovery Rates**: Are discovery distribution rates working?
+6. **Session Length**: How long do players stay engaged per session?
+7. **Debug Mode Usage**: How does speed acceleration affect testing?
+
+*All specific values are configurable in @game-config.json*
 
 ## Design Pivots/Changes
 ### Major Changes from Original Design:
-1. **Resource Display Format**: Changed from "generation/capacity" to "current amount (+generation/hr)"
-   - **Reason**: User feedback - clearer understanding of auto-generation
-   - **Impact**: Much better UX, resources feel more dynamic
+1. **Tick-Based Architecture**: Complete system redesign
+   - **Reason**: Time management was inconsistent, needed clean foundation
+   - **Impact**: Predictable, testable, scalable time system
 
-2. **Timer Duration**: Using 10 seconds instead of 2 hours for development
-   - **Reason**: Rapid testing and feedback cycles
-   - **Future**: Will return to 2 hours for production
+2. **Resource Caps**: Added storage limits and expansion mechanics
+   - **Reason**: Infinite accumulation made decisions meaningless
+   - **Impact**: Created resource management decisions and expansion pressure
 
-3. **Auto-Generation**: Added real-time resource accumulation
-   - **Reason**: User feedback - resources should generate automatically
-   - **Impact**: Game feels more alive and rewarding
+3. **Debug Speed Mode**: 3600x time acceleration
+   - **Reason**: Testing 2-hour cycles was impractical
+   - **Impact**: Can test full day cycles in seconds
+
+4. **Auto-Timer Completion**: No manual collection needed
+   - **Reason**: Clicking to collect was tedious busy work
+   - **Impact**: Smoother progression, focuses on decisions not clicking
+
+5. **Enhanced UI Format**: "25/50 (+5/Hr 8/Hr Max)"
+   - **Reason**: Previous format didn't clearly show capacity vs generation
+   - **Impact**: Much clearer progression understanding
 
 ## Playtesting Notes
 ### Session 1 (2025-06-21):
