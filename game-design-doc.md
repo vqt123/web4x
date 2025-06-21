@@ -208,6 +208,42 @@ Resource development: timer countdown
 6. **Inclusive Competition**: Leaderboard focus means everyone can play to the end
 7. **Positive Reinforcement**: No elimination or bankruptcy - always moving forward
 
+## Multiplayer Design Considerations
+
+### Guest Account System
+- **Frictionless Entry**: No registration required to start playing
+- **Persistent Progress**: Guest ID stored in localStorage allows returning
+- **Future Upgrade Path**: Guests can optionally create accounts later
+- **Privacy First**: No personal data collected for guest accounts
+
+### Single World Design (MVP)
+- **Shared Experience**: All players in same world initially
+- **Continuous Play**: World persists even when individuals offline
+- **Real-time Updates**: See other players' progress live
+- **No Waiting**: Join and play immediately, no lobby/matchmaking
+
+### Multiplayer Mechanics
+- **Asynchronous Play**: 2-week matches support different play schedules
+- **Visible Progress**: See when others make discoveries or developments
+- **Indirect Competition**: No direct player conflict in MVP
+- **Shared Events**: World discoveries benefit from collective exploration
+- **Leaderboard**: Constant visibility of relative performance
+
+### Technical Considerations
+- **Server Authority**: All game logic server-side prevents cheating
+- **Optimistic UI**: Immediate feedback with server validation
+- **Graceful Degradation**: Game playable even with connection issues
+- **Scalability Path**: Architecture supports future multi-world expansion
+
+### Future Multiplayer Features
+- **Multiple Worlds**: 14-day cycles with different start times
+- **World Selection**: Choose competitive or casual worlds
+- **Friends System**: Join worlds with specific players
+- **Trading**: Direct resource exchange between players
+- **Alliances**: Formal cooperation mechanics
+- **World Chat**: Optional communication channels
+- **Tournaments**: Special event worlds with unique rules
+
 ## Implementation Notes
 
 **Configuration**: All balance parameters are defined in `@game-config.json`
