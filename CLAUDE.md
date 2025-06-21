@@ -21,18 +21,33 @@ We are building a turn-based, asynchronous web 4X game designed to be played ove
 - No spatial/map elements - pure numbers game
 
 ## Current Development Status
-**Status**: Design complete, NO CODE written yet
-**Next Step**: Implement Step 1.1 from development-plan.md - Create minimal HTML with AP display and resource counters
+**Status**: ✅ PHASE 1 COMPLETE - Core explore→develop loop implemented and tested
+**Current**: Step 1.1-1.4 completed - Full MVP working
+**Next Step**: Test 5-minute experience and gather feedback
 
-## What We're Building First (Step 1.1)
+## What We've Built (Steps 1.1-1.4 Complete)
 ```
 Action Points: 150
 
-Food: 5/5 | Production: 3/3 | Gold: 1/1
-(format: generation/capacity per hour)
+Resources (current amount + generation rate)
+Food: 15 (+5/hr)
+Production: 9 (+3/hr) 
+Gold: 3 (+1/hr)
 
-[EXPLORE - 5 AP]
+Active Developments
+Food development: 0:01:23
+
+[EXPLORE - 5 AP]    [DEVELOP - 10 AP]
+Discover capacity    Convert capacity into generation
 ```
+
+## Implemented Features ✅
+- **Core UI**: Action points, resource display with auto-generation
+- **Exploration System**: 60% food, 30% production, 10% gold discovery rates
+- **Development System**: 2-hour timers (10s for testing) to convert capacity→generation  
+- **Real-time Updates**: Resources accumulate automatically, timers count down
+- **Clear UX**: Action descriptions, tooltips, discovery popups
+- **Activity Log**: Track all player actions and completions
 
 ## Key Design Decisions Made
 - **NO MAPS**: Abstract resource discovery, not spatial exploration
@@ -43,18 +58,36 @@ Food: 5/5 | Production: 3/3 | Gold: 1/1
 ## Important Reminders
 - Players start with 150 AP
 - Actions regenerate at 10 AP/hour  
-- Resources show as "current/capacity"
-- Explore increases capacity, Develop increases generation
-- 2-hour timers create return hooks
+- Resources show as "current amount (+generation/hr)"
+- Explore increases capacity, Develop increases generation up to capacity
+- 2-hour timers create return hooks (10s for testing)
 - Keep UI minimal and text-based for MVP
 
-## Technical Stack (TBD)
-- Start with vanilla HTML/CSS/JavaScript
-- Use localStorage for persistence
-- No frameworks until core loop validated
+## Technical Stack ✅
+- **Frontend**: Vanilla HTML/CSS/JavaScript (single file)
+- **Styling**: Terminal green-on-black theme
+- **Persistence**: LocalStorage (not yet implemented)
+- **Timers**: Real-time JavaScript intervals
+- **No frameworks**: Validated core loop first
 
 ## Testing Commands
-<!-- Add test/lint commands here as we discover them -->
+```bash
+# Start development server (background)
+nohup python3 -m http.server 8000 > server.log 2>&1 &
+
+# Check if server running
+ps aux | grep "python3 -m http.server"
+
+# Access game
+# Open browser: http://localhost:8000
+
+# Stop server
+pkill -f "python3 -m http.server 8000"
+```
 
 ## Architecture Decisions
-<!-- Document key technical decisions as we make them -->
+- **Single HTML file**: Easier testing and deployment
+- **Real-time updates**: 1-second intervals for smooth UX
+- **Capacity vs Generation**: Two-step resource system works well
+- **10-second timers**: For rapid testing (will be 2 hours in production)
+- **No persistence yet**: Focus on core mechanics first

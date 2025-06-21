@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web 4X Game</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #1a1a1a;
+            color: #00ff00;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .game-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 18px;
+            border-bottom: 1px solid #00ff00;
+            padding-bottom: 10px;
+        }
+        
+        .resources {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .resource-line {
+            font-size: 16px;
+            margin: 5px 0;
+        }
+        
+        .actions {
+            text-align: center;
+        }
+        
+        .action-button {
+            background-color: #003300;
+            color: #00ff00;
+            border: 2px solid #00ff00;
+            padding: 15px 30px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+            transition: background-color 0.2s;
+        }
+        
+        .action-button:hover {
+            background-color: #005500;
+        }
+        
+        .action-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .discovery-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #002200;
+            border: 3px solid #00ff00;
+            padding: 30px;
+            text-align: center;
+            font-size: 18px;
+            z-index: 1000;
+            min-width: 300px;
+        }
+        
+        .discovery-popup h3 {
+            margin-top: 0;
+            color: #ffff00;
+        }
+        
+        .close-popup {
+            background-color: #003300;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 10px 20px;
+            margin-top: 15px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .discovery-log {
+            margin: 20px 0;
+            text-align: left;
+            border: 1px solid #00ff00;
+            padding: 15px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        .log-entry {
+            margin: 3px 0;
+            font-size: 14px;
+        }
+        
+        .timers {
+            margin: 20px 0;
+            border: 1px solid #ffff00;
+            padding: 15px;
+        }
+        
+        .timer-entry {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #ffff00;
+        }
+        
+        .timer-entry.completed {
+            color: #00ff00;
+        }
+        
+        .develop-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #002200;
+            border: 3px solid #00ff00;
+            padding: 30px;
+            text-align: center;
+            font-size: 16px;
+            z-index: 1000;
+            min-width: 400px;
+        }
+        
+        .resource-choice {
+            background-color: #003300;
+            color: #00ff00;
+            border: 2px solid #00ff00;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            display: block;
+            width: 100%;
+        }
+        
+        .resource-choice:hover {
+            background-color: #005500;
+        }
+        
+        .resource-choice:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>Web 4X Game</h1>
+            <div id="action-points">Action Points: 150</div>
+        </div>
+        
+        <div class="resources">
+            <h3 style="margin: 0 0 10px 0; color: #ffff00;">Resources (current amount + generation rate)</h3>
+            <div class="resource-line" id="food-display">Food: 10 (+5/hr)</div>
+            <div class="resource-line" id="production-display">Production: 6 (+3/hr)</div>
+            <div class="resource-line" id="gold-display">Gold: 2 (+1/hr)</div>
+        </div>
+        
+        <div class="timers" id="timers-section" style="display: none;">
+            <h3 style="margin-top: 0; color: #ffff00;">Active Developments</h3>
+            <div id="active-timers"></div>
+        </div>
+        
+        <div class="discovery-log" id="discovery-log">
+            <div class="log-entry">Ready to explore! Click EXPLORE to discover resource capacity.</div>
+        </div>
+        
+        <div class="actions">
+            <button class="action-button" id="explore-btn" title="Find new resource sites to increase generation capacity">
+                EXPLORE - 5 AP<br>
+                <small>Discover capacity for resource generation</small>
+            </button>
+            <button class="action-button" id="develop-btn" title="Build infrastructure to increase resource generation rate">
+                DEVELOP - 10 AP<br>
+                <small>Convert capacity into actual generation</small>
+            </button>
+        </div>
+    </div>
+    
+    <div id="discovery-popup" class="discovery-popup" style="display: none;">
+        <h3 id="popup-title">Discovery!</h3>
+        <p id="popup-message"></p>
+        <button class="close-popup" onclick="closePopup()">Continue</button>
+    </div>
+    
+    <div id="develop-popup" class="develop-popup" style="display: none;">
+        <h3 style="color: #ffff00;">Choose Resource to Develop</h3>
+        <p>Build infrastructure to increase generation rate (2-hour timer)<br>
+        <small>You can only develop up to your discovered capacity</small></p>
+        <div id="resource-choices"></div>
+        <button class="close-popup" onclick="closeDevelopPopup()">Cancel</button>
+    </div>
+
+    <script>
+        // Game state
+        let gameState = {
+            actionPoints: 150,
+            resources: {
+                food: { current: 10, generation: 5, capacity: 5 },
+                production: { current: 6, generation: 3, capacity: 3 },
+                gold: { current: 2, generation: 1, capacity: 1 }
+            },
+            explorationCount: 0,
+            activeTimers: [],
+            nextTimerId: 1,
+            lastUpdateTime: Date.now()
+        };
+
+        // UI elements
+        const apDisplay = document.getElementById('action-points');
+        const foodDisplay = document.getElementById('food-display');
+        const productionDisplay = document.getElementById('production-display');
+        const goldDisplay = document.getElementById('gold-display');
+        const exploreBtn = document.getElementById('explore-btn');
+        const developBtn = document.getElementById('develop-btn');
+        const discoveryLog = document.getElementById('discovery-log');
+        const timersSection = document.getElementById('timers-section');
+        const activeTimersDiv = document.getElementById('active-timers');
+
+        // Discovery messages
+        const discoveryMessages = {
+            food: [
+                "Fertile lands discovered! Rich soil perfect for farming.",
+                "A hidden valley with excellent growing conditions found!",
+                "Fresh water springs discovered - ideal for agriculture!",
+                "Ancient farmland ruins reveal agricultural secrets."
+            ],
+            production: [
+                "Iron ore deposits spotted in the mountainside!",
+                "Timber grove discovered - perfect for construction.",
+                "Stone quarry located with high-quality materials!",
+                "Workshop ruins contain useful production techniques."
+            ],
+            gold: [
+                "Glinting minerals found in a cave system!",
+                "Ancient trade route discovered with valuable artifacts!",
+                "Rare gems spotted near the riverbank!",
+                "Abandoned merchant cache found!"
+            ]
+        };
+
+        // Auto-generate resources
+        function updateResources() {
+            const now = Date.now();
+            const timeDiff = (now - gameState.lastUpdateTime) / 1000; // seconds
+            
+            Object.keys(gameState.resources).forEach(resourceType => {
+                const resource = gameState.resources[resourceType];
+                resource.current += resource.generation * (timeDiff / 3600); // per hour rate
+            });
+            
+            gameState.lastUpdateTime = now;
+        }
+
+        // Update displays
+        function updateUI() {
+            updateResources();
+            
+            apDisplay.textContent = `Action Points: ${gameState.actionPoints}`;
+            foodDisplay.textContent = `Food: ${Math.floor(gameState.resources.food.current)} (+${gameState.resources.food.generation}/hr)`;
+            productionDisplay.textContent = `Production: ${Math.floor(gameState.resources.production.current)} (+${gameState.resources.production.generation}/hr)`;
+            goldDisplay.textContent = `Gold: ${Math.floor(gameState.resources.gold.current)} (+${gameState.resources.gold.generation}/hr)`;
+            
+            // Enable/disable buttons based on AP
+            exploreBtn.disabled = gameState.actionPoints < 5;
+            developBtn.disabled = gameState.actionPoints < 10;
+            
+            // Update timers display
+            updateTimersDisplay();
+        }
+
+        // Add log entry
+        function addLogEntry(message) {
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+            discoveryLog.appendChild(entry);
+            discoveryLog.scrollTop = discoveryLog.scrollHeight;
+        }
+
+        // Show discovery popup
+        function showDiscovery(resourceType, amount) {
+            const popup = document.getElementById('discovery-popup');
+            const title = document.getElementById('popup-title');
+            const message = document.getElementById('popup-message');
+            
+            const messages = discoveryMessages[resourceType];
+            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+            
+            title.textContent = 'Discovery!';
+            message.innerHTML = `${randomMessage}<br><br><strong>${resourceType.charAt(0).toUpperCase() + resourceType.slice(1)} generation capacity +${amount}</strong><br>You can now develop this site to increase your ${resourceType} generation rate! (Current max: ${gameState.resources[resourceType].capacity}/hr)`;
+            
+            popup.style.display = 'block';
+        }
+
+        // Close popup
+        function closePopup() {
+            document.getElementById('discovery-popup').style.display = 'none';
+        }
+
+        // Exploration logic
+        function doExploration() {
+            gameState.explorationCount++;
+            
+            // Discovery rolls based on game design: 60% food, 30% production, 10% gold
+            const roll = Math.random();
+            let resourceType, amount = 1;
+            
+            if (roll < 0.6) {
+                resourceType = 'food';
+            } else if (roll < 0.9) {
+                resourceType = 'production';
+            } else {
+                resourceType = 'gold';
+            }
+            
+            // Update capacity
+            gameState.resources[resourceType].capacity += amount;
+            
+            // Log the discovery
+            addLogEntry(`Explored and found ${resourceType} capacity +${amount}`);
+            
+            // Show discovery popup
+            showDiscovery(resourceType, amount);
+            
+            // Update UI
+            updateUI();
+        }
+
+        // Timer management
+        function updateTimersDisplay() {
+            if (gameState.activeTimers.length === 0) {
+                timersSection.style.display = 'none';
+                return;
+            }
+            
+            timersSection.style.display = 'block';
+            activeTimersDiv.innerHTML = '';
+            
+            const now = Date.now();
+            
+            gameState.activeTimers.forEach((timer, index) => {
+                const remaining = timer.completionTime - now;
+                const entry = document.createElement('div');
+                entry.className = 'timer-entry';
+                
+                if (remaining <= 0) {
+                    entry.className += ' completed';
+                    entry.textContent = `${timer.resourceType.charAt(0).toUpperCase() + timer.resourceType.slice(1)} development COMPLETE! Click to collect.`;
+                    entry.style.cursor = 'pointer';
+                    entry.onclick = () => completeTimer(index);
+                } else {
+                    const hours = Math.floor(remaining / (1000 * 60 * 60));
+                    const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+                    entry.textContent = `${timer.resourceType.charAt(0).toUpperCase() + timer.resourceType.slice(1)} development: ${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                }
+                
+                activeTimersDiv.appendChild(entry);
+            });
+        }
+
+        function completeTimer(timerIndex) {
+            const timer = gameState.activeTimers[timerIndex];
+            const amount = timer.amount;
+            
+            // Increase generation
+            gameState.resources[timer.resourceType].generation += amount;
+            
+            // Remove timer
+            gameState.activeTimers.splice(timerIndex, 1);
+            
+            // Log completion
+            addLogEntry(`${timer.resourceType.charAt(0).toUpperCase() + timer.resourceType.slice(1)} development completed! +${amount} generation/hour`);
+            
+            // Update UI
+            updateUI();
+        }
+
+        function showDevelopmentPopup() {
+            const popup = document.getElementById('develop-popup');
+            const choicesDiv = document.getElementById('resource-choices');
+            
+            choicesDiv.innerHTML = '';
+            
+            // Show only resources that have capacity > generation
+            Object.keys(gameState.resources).forEach(resourceType => {
+                const resource = gameState.resources[resourceType];
+                if (resource.capacity > resource.generation) {
+                    const button = document.createElement('button');
+                    button.className = 'resource-choice';
+                    const potentialIncrease = Math.min(1, resource.capacity - resource.generation);
+                    button.innerHTML = `Develop ${resourceType.charAt(0).toUpperCase() + resourceType.slice(1)}<br>
+                        <small>Generation: ${resource.generation} → ${resource.generation + potentialIncrease} per hour<br>
+                        (Capacity: ${resource.capacity}/hr)</small>`;
+                    button.onclick = () => startDevelopment(resourceType);
+                    choicesDiv.appendChild(button);
+                }
+            });
+            
+            if (choicesDiv.children.length === 0) {
+                choicesDiv.innerHTML = '<p>No resources available for development. Explore to increase capacity first!</p>';
+            }
+            
+            popup.style.display = 'block';
+        }
+
+        function closeDevelopPopup() {
+            document.getElementById('develop-popup').style.display = 'none';
+        }
+
+        function startDevelopment(resourceType) {
+            const resource = gameState.resources[resourceType];
+            const amount = Math.min(1, resource.capacity - resource.generation);
+            
+            if (amount > 0) {
+                // Create timer (2 hours = 7200000 ms, but using 10 seconds for testing)
+                const timer = {
+                    id: gameState.nextTimerId++,
+                    resourceType: resourceType,
+                    amount: amount,
+                    completionTime: Date.now() + 10000 // 10 seconds for testing
+                };
+                
+                gameState.activeTimers.push(timer);
+                
+                // Log development start
+                addLogEntry(`Started developing ${resourceType} (+${amount} generation in 2 hours)`);
+                
+                // Update UI
+                updateUI();
+            }
+            
+            closeDevelopPopup();
+        }
+
+        // Event listeners
+        exploreBtn.addEventListener('click', function() {
+            if (gameState.actionPoints >= 5) {
+                gameState.actionPoints -= 5;
+                doExploration();
+            }
+        });
+
+        developBtn.addEventListener('click', function() {
+            if (gameState.actionPoints >= 10) {
+                gameState.actionPoints -= 10;
+                showDevelopmentPopup();
+            }
+        });
+
+        // Update timers every second
+        setInterval(updateTimersDisplay, 1000);
+        
+        // Update resources every second to show auto-generation
+        setInterval(updateUI, 1000);
+
+        // Initialize
+        updateUI();
+    </script>
+</body>
+</html>
