@@ -20,19 +20,38 @@ We are building a turn-based, asynchronous web 4X game designed to be played ove
 - Test capacity/generation balance extensively
 - No spatial/map elements - pure numbers game
 
-## Current Development Phase
-Building Phase 1 (Minutes 0-5) focusing on:
-1. Resource display (generation/capacity format)
-2. Explore action with random discoveries
-3. Develop action with timers
-4. Core loop understanding
+## Current Development Status
+**Status**: Design complete, NO CODE written yet
+**Next Step**: Implement Step 1.1 from development-plan.md - Create minimal HTML with AP display and resource counters
+
+## What We're Building First (Step 1.1)
+```
+Action Points: 150
+
+Food: 5/5 | Production: 3/3 | Gold: 1/1
+(format: generation/capacity per hour)
+
+[EXPLORE - 5 AP]
+```
+
+## Key Design Decisions Made
+- **NO MAPS**: Abstract resource discovery, not spatial exploration
+- **Leaderboard**: No player elimination, score-based competition
+- **Capacity vs Generation**: Two-step resource growth system
+- **First 5 Minutes**: Must teach explore→develop loop
 
 ## Important Reminders
 - Players start with 150 AP
-- Actions regenerate at 10 AP/hour
-- First session should use ~100 AP over 30 minutes
-- All actions should have meaningful costs and timers
-- Keep the UI text-based until core mechanics are proven
+- Actions regenerate at 10 AP/hour  
+- Resources show as "current/capacity"
+- Explore increases capacity, Develop increases generation
+- 2-hour timers create return hooks
+- Keep UI minimal and text-based for MVP
+
+## Technical Stack (TBD)
+- Start with vanilla HTML/CSS/JavaScript
+- Use localStorage for persistence
+- No frameworks until core loop validated
 
 ## Testing Commands
 <!-- Add test/lint commands here as we discover them -->
