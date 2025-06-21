@@ -47,11 +47,14 @@ pkill -f "python3 -m http.server 8000"
 # Install dependencies (first time)
 npm install
 
-# Start Node.js server
-npm run dev
+# Start Node.js server in background
+nohup npm run dev > server.log 2>&1 &
 
 # Open game
 # http://localhost:3000
+
+# Stop server
+pkill -f "nodemon.*server.js" || pkill -f "node.*server.js"
 ```
 
 ## Core Loop
@@ -78,7 +81,44 @@ npm run dev
 1. ✅ Core explore→develop loop
 2. ✅ Resource management with caps
 3. ✅ Debug speed mode
-4. 🚧 Multiplayer foundation (Phase 2 - in progress)
+4. ✅ Multiplayer foundation (Phase 2 - complete)
 5. 🔄 Research system
 6. 🔄 Trading mechanics
 7. 🔄 Multiple worlds & matchmaking
+
+## Testing Requirements
+
+### Background Processes
+**IMPORTANT**: Always run long-running processes in the background using `nohup` and `&`:
+```bash
+# Correct way to start server
+nohup npm run dev > server.log 2>&1 &
+
+# Correct way to run tests
+nohup node test-client.js > test.log 2>&1 &
+```
+
+### UI Testing
+**IMPORTANT**: WSL/Windows environments cannot run Puppeteer/Chrome directly.
+**Required**: Use Docker for all UI testing:
+
+```bash
+# Build Docker test environment
+docker build -t web4x-test -f Dockerfile.test .
+
+# Run UI tests in Docker
+docker run --rm -p 3000:3000 web4x-test npm run test:ui
+
+# Run multiplayer tests
+docker run --rm -p 3000:3000 web4x-test npm run test:multiplayer
+```
+
+### Server-Side Testing
+WebSocket and server logic can be tested directly with Node.js clients:
+```bash
+# Install test dependencies
+npm install socket.io-client
+
+# Run multiplayer simulation
+nohup node test-client.js > test.log 2>&1 &
+```

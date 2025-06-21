@@ -96,6 +96,20 @@ io.on('connection', (socket) => {
     }
   });
   
+  socket.on('action', (actionData) => {
+    const guestId = socket.guestId;
+    if (!guestId || !gameState.players[guestId]) {
+      socket.emit('actionResult', {
+        success: false,
+        error: 'Player not found'
+      });
+      return;
+    }
+    
+    console.log(`Action received from ${guestId}:`, actionData);
+    processPlayerAction(guestId, actionData, socket);
+  });
+  
   socket.on('disconnect', () => {
     console.log(`Client disconnected: ${socket.id}`);
     
@@ -154,7 +168,10 @@ function getPlayerState(guestId) {
   return {
     resources: player.resources,
     actionPoints: player.actionPoints,
-    activeTimers: player.activeTimers
+    activeTimers: player.activeTimers,
+    worldInfo: {
+      currentTick: gameState.world.currentTick
+    }
   };
 }
 
@@ -214,13 +231,39 @@ function generateResources(player) {
   }
 }
 
-// Process timers (placeholder for now)
+// Process timers
 function processTimers(player) {
-  // Timer processing will be implemented when we add actions
-  // For now, just filter out completed timers
-  player.activeTimers = player.activeTimers.filter(timer => 
-    timer.completionTick > gameState.world.currentTick
-  );
+  const currentTick = gameState.world.currentTick;
+  const completedTimers = [];
+  
+  // Find completed timers
+  player.activeTimers = player.activeTimers.filter(timer => {
+    if (timer.completionTick <= currentTick) {
+      completedTimers.push(timer);
+      return false; // Remove from active timers
+    }
+    return true; // Keep active
+  });
+  
+  // Process completed timers
+  completedTimers.forEach(timer => {
+    if (timer.type === 'development') {
+      // Increase generation
+      const resource = player.resources[timer.resourceType];
+      resource.generation = Math.min(resource.capacity, resource.generation + 1);
+      
+      // Add completion log
+      const logEntry = `${new Date().toLocaleTimeString()}: ${timer.resourceType} development completed! +1 generation/hour`;
+      gameState.world.discoveryLog.push({
+        playerId: player.guestId,
+        timestamp: Date.now(),
+        message: logEntry,
+        resourceType: timer.resourceType
+      });
+      
+      console.log(`Development completed for ${player.guestId}: ${timer.resourceType} +1 generation`);
+    }
+  });
 }
 
 // Broadcast state updates to all connected players
@@ -247,6 +290,287 @@ function cleanupInactivePlayers() {
       console.log(`Cleaned up inactive player: ${playerId}`);
     }
   }
+}
+
+// Process player actions
+function processPlayerAction(guestId, actionData, socket) {
+  const player = gameState.players[guestId];
+  const { type, data } = actionData;
+  
+  try {
+    let result;
+    
+    switch (type) {
+      case 'explore':
+        result = processExploreAction(player);
+        break;
+      case 'develop':
+        result = processDevelopAction(player, data);
+        break;
+      case 'expandStorage':
+        result = processExpandStorageAction(player, data);
+        break;
+      case 'toggleDebug':
+        result = processToggleDebugAction(player);
+        break;
+      default:
+        throw new Error(`Unknown action type: ${type}`);
+    }
+    
+    if (result.success) {
+      // Update player's last seen
+      player.lastSeen = Date.now();
+      
+      // Send success result to player
+      socket.emit('actionResult', {
+        success: true,
+        type: type,
+        result: result.data
+      });
+      
+      // Broadcast world event if applicable
+      if (result.worldEvent) {
+        io.emit('worldEvent', result.worldEvent);
+      }
+      
+      console.log(`${type} action successful for ${guestId}`);
+    } else {
+      // Send error result
+      socket.emit('actionResult', {
+        success: false,
+        type: type,
+        error: result.error
+      });
+      
+      console.log(`${type} action failed for ${guestId}: ${result.error}`);
+    }
+  } catch (error) {
+    console.error(`Error processing ${type} action for ${guestId}:`, error);
+    socket.emit('actionResult', {
+      success: false,
+      type: type,
+      error: 'Internal server error'
+    });
+  }
+}
+
+// Validate if player has enough action points
+function validateActionPoints(player, cost) {
+  return player.actionPoints.current >= cost;
+}
+
+// Deduct action points from player
+function deductActionPoints(player, cost) {
+  player.actionPoints.current = Math.max(0, player.actionPoints.current - cost);
+}
+
+// Process explore action
+function processExploreAction(player) {
+  const cost = gameConfig.actions.explore.cost;
+  
+  // Validate action points
+  if (!validateActionPoints(player, cost)) {
+    return {
+      success: false,
+      error: `Not enough action points. Need ${cost}, have ${Math.floor(player.actionPoints.current)}`
+    };
+  }
+  
+  // Deduct action points
+  deductActionPoints(player, cost);
+  
+  // Roll for discovery
+  const roll = Math.random();
+  const rates = gameConfig.actions.explore.discoveryRates;
+  
+  let discoveredResource = null;
+  let cumulativeRate = 0;
+  
+  for (const [resourceType, rate] of Object.entries(rates)) {
+    cumulativeRate += rate;
+    if (roll <= cumulativeRate) {
+      discoveredResource = resourceType;
+      break;
+    }
+  }
+  
+  if (discoveredResource) {
+    // Increase capacity
+    const resource = player.resources[discoveredResource];
+    const oldCapacity = resource.capacity;
+    resource.capacity += 1;
+    
+    // Add to discovery log
+    const logEntry = `${new Date().toLocaleTimeString()}: Explored and found ${discoveredResource} capacity +1`;
+    gameState.world.discoveryLog.push({
+      playerId: player.guestId,
+      timestamp: Date.now(),
+      message: logEntry,
+      resourceType: discoveredResource
+    });
+    
+    // Keep only last 100 entries
+    if (gameState.world.discoveryLog.length > 100) {
+      gameState.world.discoveryLog = gameState.world.discoveryLog.slice(-100);
+    }
+    
+    return {
+      success: true,
+      data: {
+        resourceType: discoveredResource,
+        oldCapacity: oldCapacity,
+        newCapacity: resource.capacity,
+        message: getDiscoveryMessage(discoveredResource)
+      },
+      worldEvent: {
+        type: 'discovery',
+        message: `A player discovered ${discoveredResource} capacity`,
+        playerCount: gameState.metrics.activePlayers
+      }
+    };
+  } else {
+    return {
+      success: false,
+      error: 'No resources discovered this time. Try again!'
+    };
+  }
+}
+
+// Process develop action
+function processDevelopAction(player, data) {
+  const cost = gameConfig.actions.develop.cost;
+  
+  // Validate action points
+  if (!validateActionPoints(player, cost)) {
+    return {
+      success: false,
+      error: `Not enough action points. Need ${cost}, have ${Math.floor(player.actionPoints.current)}`
+    };
+  }
+  
+  const resourceType = data.resourceType;
+  if (!resourceType || !player.resources[resourceType]) {
+    return {
+      success: false,
+      error: 'Invalid resource type'
+    };
+  }
+  
+  const resource = player.resources[resourceType];
+  
+  // Check if there's capacity to develop
+  if (resource.generation >= resource.capacity) {
+    return {
+      success: false,
+      error: `${resourceType} generation is already at maximum capacity. Explore first to increase capacity.`
+    };
+  }
+  
+  // Deduct action points
+  deductActionPoints(player, cost);
+  
+  // Create development timer
+  const completionTick = gameState.world.currentTick + gameConfig.timers.development.productionTicks;
+  const timer = {
+    id: `${player.guestId}-${resourceType}-${Date.now()}`,
+    playerId: player.guestId,
+    type: 'development',
+    resourceType: resourceType,
+    completionTick: completionTick,
+    startTick: gameState.world.currentTick
+  };
+  
+  player.activeTimers.push(timer);
+  
+  // Add to discovery log
+  const logEntry = `${new Date().toLocaleTimeString()}: Started developing ${resourceType} (+1 generation in ${Math.floor(gameConfig.timers.development.productionTicks / 3600)} hours)`;
+  gameState.world.discoveryLog.push({
+    playerId: player.guestId,
+    timestamp: Date.now(),
+    message: logEntry,
+    resourceType: resourceType
+  });
+  
+  return {
+    success: true,
+    data: {
+      resourceType: resourceType,
+      completionTick: completionTick,
+      timerId: timer.id
+    }
+  };
+}
+
+// Process expand storage action
+function processExpandStorageAction(player, data) {
+  const cost = gameConfig.actions.expandStorage.cost;
+  
+  // Validate action points
+  if (!validateActionPoints(player, cost)) {
+    return {
+      success: false,
+      error: `Not enough action points. Need ${cost}, have ${Math.floor(player.actionPoints.current)}`
+    };
+  }
+  
+  const resourceType = data.resourceType;
+  if (!resourceType || !player.resources[resourceType]) {
+    return {
+      success: false,
+      error: 'Invalid resource type'
+    };
+  }
+  
+  // Deduct action points
+  deductActionPoints(player, cost);
+  
+  // Expand storage
+  const resource = player.resources[resourceType];
+  const oldCap = resource.cap;
+  const increase = gameConfig.actions.expandStorage.capacityIncrease;
+  resource.cap += increase;
+  
+  // Add to discovery log
+  const logEntry = `${new Date().toLocaleTimeString()}: Expanded ${resourceType} storage capacity by ${increase} (now ${resource.cap})`;
+  gameState.world.discoveryLog.push({
+    playerId: player.guestId,
+    timestamp: Date.now(),
+    message: logEntry,
+    resourceType: resourceType
+  });
+  
+  return {
+    success: true,
+    data: {
+      resourceType: resourceType,
+      oldCap: oldCap,
+      newCap: resource.cap,
+      increase: increase
+    }
+  };
+}
+
+// Process toggle debug action (placeholder)
+function processToggleDebugAction(player) {
+  // For now, just acknowledge the action
+  // In a full implementation, this might toggle server-side debug features
+  return {
+    success: true,
+    data: {
+      message: 'Debug mode toggle acknowledged (server-side debug not implemented yet)'
+    }
+  };
+}
+
+// Get discovery message based on resource type
+function getDiscoveryMessage(resourceType) {
+  const messages = {
+    food: "You've discovered fertile lands perfect for agriculture! Your food production capacity has increased.",
+    production: "You've found a site rich in materials and perfect for manufacturing! Your production capacity has increased.",
+    gold: "You've discovered a valuable trade route and mineral deposits! Your gold generation capacity has increased."
+  };
+  
+  return messages[resourceType] || "You've made an important discovery!";
 }
 
 // Start the game tick loop
