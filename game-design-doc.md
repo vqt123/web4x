@@ -1,7 +1,7 @@
 # Web 4X Game Design Document
 
 ## Core Concept
-A turn-based, action-per-time based web 4X game inspired by RTS mechanics, designed to be played over a 2-week period with multiple short sessions per day.
+A turn-based, action-per-time based web 4X game inspired by RTS mechanics, designed to be played over a 2-week period with multiple short sessions per day. The game abstracts away spatial elements, focusing on resource capacity discovery and development through strategic action point allocation.
 
 ## Game Duration & Pacing
 - **Total Game Length**: 14 days per match
@@ -19,73 +19,84 @@ A turn-based, action-per-time based web 4X game inspired by RTS mechanics, desig
 
 ### Action Scaling Over Time
 **Days 1-2: Micro Management Phase**
-- 1-3 AP per action
-- Individual unit movements
-- Tile-by-tile exploration
+- 1-5 AP per action
+- Individual resource discoveries
+- Capacity vs generation decisions
 - Every decision is meaningful
 
 **Days 3-7: Tactical Scale**
-- 5-10 AP per action
-- Group movements
-- Multi-queue production
-- Area commands
+- 5-15 AP per action
+- Multiple development projects
+- Resource optimization
+- Trade negotiations
 
 **Days 8-14: Strategic Scale**
-- 10-20 AP per action
-- Army movements
-- City management
-- Alliance operations
+- 10-30 AP per action
+- Economic warfare
+- Mega-projects
+- Alliance resource sharing
 
 ## First 30 Minutes - Critical Opening Session
 
 ### Minutes 0-5: Discovery Phase
-- Player starts with 150 AP and one scout unit
-- Move scout tile by tile (2 AP per move, 30-second timer)
-- Reveal terrain gradually (fog of war)
-- Examine tiles for bonuses (1 AP, instant)
-- Find ideal settlement location
+- Start with base generation: Food 5/hr, Production 3/hr, Gold 1/hr
+- Each resource shows current/capacity (e.g., "Food: 5/5")
+- **Explore Action** (5 AP): Roll for capacity increase
+  - 60%: +1 Food capacity
+  - 30%: +1 Production capacity  
+  - 10%: +1 Gold capacity
+- **Develop Action** (10 AP): Convert capacity to generation (2-hour timer)
+- Make 10-15 meaningful decisions about exploration vs development
 
-### Minutes 10-15: Foundation
-- Found first settlement (10 AP, 2-hour timer)
-- Name civilization
-- See resource generation preview
-- Understand basic economy
+### Minutes 5-10: Strategic Development
+- Balance exploration (building capacity) vs development (actualizing it)
+- First development completes during this phase
+- Introduction of **Research** (15 AP, 4-hour timer) for multipliers
+- Resource conversion/trading unlocked
 
-### Minutes 15-25: First Decisions
-- Queue worker production (8 AP)
-- Set research priority (2 AP)
-- Continue scouting borders
-- Discover neighbors or resources
-- Plan expansion strategy
+### Minutes 10-20: Optimization Phase
+- Multiple developments running simultaneously
+- Specialization decisions (focus on one resource or balance?)
+- First research completes, improving future actions
+- Introduction of competitive elements (other players' progress visible)
 
-### Minutes 25-30: Planning Ahead
-- ~100 AP spent, 50 remaining
-- Multiple active timers (settlement construction, unit movement)
-- Clear understanding of next actions
-- Excitement to return
+### Minutes 20-30: Engagement Hook
+- Major decision point with accumulated resources
+- Unlock advanced actions (military, diplomacy, mega-projects)
+- Clear goals for next session
+- 2-3 timers running to encourage return
 
 ## Core Mechanics
 
 ### Time-Based Actions
-- **Unit Movement**: 30 seconds per tile initially
-- **Building Construction**: 2-24 hours depending on building
-- **Unit Production**: 1-4 hours
-- **Research**: 6-48 hours
+- **Development**: 2 hours (converts capacity to generation)
+- **Research**: 4 hours (improves efficiency multipliers)
+- **Major Projects**: 8-24 hours (game-changing effects)
+- **Trade Deals**: 1 hour (resource conversion agreements)
 - **Design Intent**: Creates anticipation and planning opportunities
 
 ### Resource System
 - **Basic Resources**: Food, Production, Gold
-- **Generation**: Automatic per hour from controlled structures
-- **Tile Bonuses**: 
-  - Forest: +2 Food, +1 Production
-  - River: +3 Food, +1 Gold, allows irrigation
-  - Stone: +2 Production
+- **Capacity vs Generation**: 
+  - Capacity = Maximum possible generation (increased through exploration)
+  - Generation = Actual per-hour income (increased through development)
+- **Starting Values**:
+  - Food: 5/hr (5 capacity)
+  - Production: 3/hr (3 capacity)
+  - Gold: 1/hr (1 capacity)
+- **Growth Example**: Explore → Food capacity 5→6, then Develop → Food generation 5→6/hr
 
-### Victory Conditions
-- Control 60% of map territory
-- Eliminate all opponents
-- Achieve specific victory points
-- (Details to be refined through playtesting)
+### End Game & Scoring
+- **Leaderboard-based**: No elimination or bankruptcy
+- **Score factors**:
+  - Total resource generation rate
+  - Efficiency ratios (generation/capacity)
+  - Research milestones achieved
+  - Successful trades completed
+  - Special achievements/projects
+- **Final 48 hours**: Score multipliers increase to create exciting finish
+- **Post-game**: See detailed stats and start next 2-week cycle
+- (Exact scoring formula to be refined through playtesting)
 
 ## User Interface Design
 
@@ -93,16 +104,21 @@ A turn-based, action-per-time based web 4X game inspired by RTS mechanics, desig
 ```
 Day 3, 14:23 | Action Points: 23/40
 
-=== Active Orders ===
-- Scout arriving at (12,8) in 2h 15m
-- Barracks completes in 5h 30m
-- Warrior training completes in 8h
+=== Resources (per hour) ===
+Food: 23/28 capacity (+23/hr)
+Production: 18/22 capacity (+18/hr) 
+Gold: 12/15 capacity (+12/hr)
 
-=== Available Actions ===
-[1] View Settlements (0 AP)
-[2] Issue Movement Orders (1-2 AP)
-[3] Queue Production (3 AP)
-[4] View Map Reports (0 AP)
+=== Active Timers ===
+- Farm Development completes in 1h 15m (+3 Food/hr)
+- Efficiency Research completes in 3h 30m (1.2x multiplier)
+- Trade Deal with Player 2 expires in 5h
+
+=== Actions ===
+[1] Explore (5 AP) - Discover new capacity
+[2] Develop (10 AP) - Increase generation
+[3] Research (15 AP) - Improve efficiency
+[4] Trade (8 AP) - Exchange resources
 ```
 
 ### Benefits of Text-First Development
@@ -122,11 +138,11 @@ Day 3, 14:23 | Action Points: 23/40
 - **Connected Experience**: Each chunk must flow naturally to the next
 
 ### Development Phases
-1. **Minutes 0-5**: Discovery Phase - Movement, exploration, terrain reveal
-2. **Minutes 5-10**: Decision Phase - Settlement site selection
-3. **Minutes 10-15**: Foundation Phase - Settlement placement and first production
-4. **Minutes 15-20**: Planning Phase - Resource management and expansion planning
-5. **Minutes 20-30**: Engagement Hook - First conflict or major discovery
+1. **Minutes 0-5**: Discovery Phase - Exploration rolls, capacity discovery, first developments
+2. **Minutes 5-10**: Decision Phase - Capacity vs generation balance, research introduction
+3. **Minutes 10-15**: Optimization Phase - Multiple developments, specialization choices
+4. **Minutes 15-20**: Competition Phase - See other players' progress, trade opportunities
+5. **Minutes 20-30**: Engagement Hook - Advanced actions unlock, major projects
 
 ### Technical Considerations
 - Browser-based for accessibility
@@ -137,12 +153,12 @@ Day 3, 14:23 | Action Points: 23/40
 
 ### Implementation Priorities
 1. Core action point system with regeneration
-2. Basic movement and timers
-3. Fog of war and exploration
-4. Settlement placement and resources
-5. Production queues
-6. Other players (AI first, then multiplayer)
-7. Combat, diplomacy, advanced features
+2. Exploration action with capacity discovery
+3. Development action with timers
+4. Resource display (capacity/generation)
+5. Research and efficiency multipliers
+6. Trading and resource conversion
+7. Other players, competition, advanced features
 
 ## Game Progression Timeline
 
@@ -165,10 +181,11 @@ Day 3, 14:23 | Action Points: 23/40
 - Power consolidation
 
 ### Days 12-14: Endgame
-- Final victory pushes
-- Desperate defenses
-- Score maximization
-- Climactic battles
+- Score multipliers activate
+- Final efficiency pushes
+- Leaderboard positions shift rapidly
+- Rush to complete achievements
+- No player elimination - everyone plays to the end
 
 ## Design Principles
 
@@ -177,7 +194,8 @@ Day 3, 14:23 | Action Points: 23/40
 3. **Respect Player Time**: 2-week commitment with flexible scheduling
 4. **Clear Feedback**: Always show what actions cost and when they complete
 5. **Strategic Depth**: Simple actions combine into complex strategies
-6. **Social Gameplay**: Asynchronous multiplayer enables diplomacy and conflict
+6. **Inclusive Competition**: Leaderboard focus means everyone can play to the end
+7. **Positive Reinforcement**: No elimination or bankruptcy - always moving forward
 
 ## Next Steps
 

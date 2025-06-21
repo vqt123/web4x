@@ -8,116 +8,113 @@
 ## Phase 1: Minutes 0-5 - Discovery Phase
 
 ### Overview
-**Goal**: Create an engaging first 5 minutes where players learn basic controls and get excited about exploration
+**Goal**: Create an engaging first 5 minutes where players understand the core loop of exploration → capacity → development
 
 **Player Experience Target**:
 - Spend ~20-30 AP
 - Make 10-15 meaningful decisions
-- Move scout 3-5 times
-- Reveal 10-15 map tiles
-- Discover 2-3 different terrain types
-- End with clear next goal
+- Perform 4-6 explore actions
+- Start 1-2 developments
+- See clear resource growth potential
+- End with excitement about optimization
 
-### Step 1.1: Minimal AP Display & First Action
+### Step 1.1: Core UI & Resource Display
 **Implementation**:
 - [ ] Create index.html with minimal UI
-- [ ] Show only: "Action Points: 150" at top
-- [ ] Display scout at center of visible 3x3 grid
-- [ ] Simple instruction: "Click your scout"
-- [ ] When clicked, show: "Click an adjacent tile to move (2 AP)"
+- [ ] Display: "Action Points: 150" at top
+- [ ] Show resources: "Food: 5/5 | Production: 3/3 | Gold: 1/1"
+- [ ] Format: "current generation/capacity per hour"
+- [ ] Big "Explore" button (5 AP cost shown)
 
 **Success Criteria**:
-- First click within 5 seconds
-- Understand AP cost immediately
+- Understand capacity vs generation immediately
+- Click explore within 10 seconds
 
-### Step 1.2: First Movement
+### Step 1.2: First Exploration
 **Implementation**:
-- [ ] Highlight valid adjacent tiles when scout selected
-- [ ] Click tile: Spend 2 AP, start 30s timer
-- [ ] Show: "Scout moving..." with countdown
-- [ ] Animate AP: 150 → 148 (visible deduction)
-- [ ] During movement, show "Movement will reveal new tiles!"
+- [ ] Click "Explore": Deduct 5 AP (animate 150 → 145)
+- [ ] Roll discovery (show dice animation or spinner)
+- [ ] Result popup: "Fertile lands discovered! Food capacity +1"
+- [ ] Update display: "Food: 5/6" (capacity increased)
+- [ ] Hint: "Your farms can now produce up to 6 food/hour!"
 
 **Success Criteria**:
-- Movement feels responsive
-- 30s creates anticipation, not frustration
+- Discovery feels exciting (randomness)
+- Understand capacity increased but not generation
 
-### Step 1.3: Terrain Reveal & Variety
+### Step 1.3: Development Introduction
 **Implementation**:
-- [ ] When movement completes, reveal 3x3 area
-- [ ] Show terrain types with simple text:
-  - "Plains" (beige text)
-  - "Forest" (green text)  
-  - "River" (blue text)
-  - "Hills" (brown text)
-- [ ] Auto-show popup: "Forest discovered! Click to examine (1 AP)"
+- [ ] After 2-3 explores, highlight "Develop" button
+- [ ] Tooltip: "Convert capacity into actual production"
+- [ ] Click Develop: Choose resource (Food highlighted since 5/6)
+- [ ] Cost 10 AP, start 2-hour timer
+- [ ] Show: "Developing farms... When complete: Food 5→6/hour"
 
 **Success Criteria**:
-- "Aha!" moment when terrain revealed
-- Want to examine immediately
+- Understand the explore → develop loop
+- Feel invested in the 2-hour timer
 
-### Step 1.4: Examine Mechanic
+### Step 1.4: Strategic Decisions
 **Implementation**:
-- [ ] Click revealed terrain tile (not unit tile)
-- [ ] Costs 1 AP, instant result
-- [ ] Show bonus in popup: "Forest: +2 Food, +1 Production if settled"
-- [ ] Log discovery in side panel
-- [ ] Hint: "Find the best spot for your first settlement!"
+- [ ] Continue exploring: Show all 3 resource types can be found
+- [ ] Discovery log shows history: "Found: Food +1, Production +1, Food +1"
+- [ ] After ~4 explores, show capacity like "Food: 5/8, Production: 3/4"
+- [ ] Decision point: Develop more or keep exploring?
+- [ ] Show AP regen timer: "+10 AP in 45 minutes"
 
 **Success Criteria**:
-- Examine 2+ different terrains
-- Start thinking about settlement placement
+- Feel the tension between exploration and development
+- Start planning future actions
 
-### Step 1.5: Strategic Exploration
+### Step 1.5: Hook for Return
 **Implementation**:
-- [ ] After 2-3 moves, show: "Tip: Rivers and resources make great settlement spots!"
-- [ ] Ensure at least one "special" discovery by move 4-5:
-  - River confluence
-  - Resource tile (Stone/Gold)
-  - Ruins (teaser for later)
-- [ ] Show running discoveries list
-- [ ] End with: "Continue exploring to find the perfect settlement location..."
+- [ ] At ~30 AP spent, show: "Pro tip: Develop when capacity > generation!"
+- [ ] Display active timer prominently: "Farm development: 1:58:00"
+- [ ] Tease next unlock: "Research unlocks at 10 total generation!"
+- [ ] Show other players' stats: "Player 2: Food 6/hr, Production 3/hr"
+- [ ] End state: 1-2 developments running, clear goals
 
 **Success Criteria**:
-- Player has spent 20-30 AP
-- Has clear goal (find settlement spot)
-- Wants to continue immediately
-- Understanding of core mechanics
+- Player has spent 25-35 AP
+- Has 1-2 timers running
+- Wants to return when development completes
+- Understands core loop completely
 
 ### What We're NOT Building Yet:
-- Settlement placement
-- Resource generation
-- Production queues
-- Multiple units
-- Fog of war beyond 3x3
-- Any combat
-- Other players
+- Research system
+- Trading mechanics
+- Resource conversion
+- Other players' actions
+- Competition elements
+- Advanced developments
+- Mega projects
 
 ### Testing Protocol for 5-Minute Session:
 1. **Fresh User Test**: No instructions except "Play"
 2. **Measure**:
    - Time to first action
-   - Number of tiles explored
-   - AP spent
-   - Tiles examined
+   - Number of explores done
+   - Capacity vs generation understanding
+   - Development decisions made
    - Where they stop/get confused
 3. **Success Metrics**:
-   - Complete in 3-5 minutes
-   - Want to continue playing
-   - No confusion points
-   - Clear about next goal
+   - Complete in 4-6 minutes
+   - Start at least 1 development
+   - Want to return when timer completes
+   - No confusion about capacity/generation
 
 ## Future Phases (High Level Only)
 
-### Phase 2: Minutes 5-10 - Decision Phase
-- Settlement site selection
-- Marking potential spots
-- Comparing locations
+### Phase 2: Minutes 5-10 - Optimization Phase
+- Multiple developments running
+- Resource specialization choices
+- Introduction of Research action
+- First glimpse of other players
 
-### Phase 3: Minutes 10-15 - Foundation Phase  
-- Placing settlement
-- Understanding timers
-- First production choice
+### Phase 3: Minutes 10-15 - Competition Phase  
+- Trading system unlocked
+- Efficiency multipliers from research
+- Competitive pressure visible
 
 ### Phase 4+: TBD based on testing
 
