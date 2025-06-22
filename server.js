@@ -28,7 +28,8 @@ const gameState = {
     startTime: Date.now(),
     currentTick: 0,
     config: gameConfig,
-    discoveryLog: []
+    discoveryLog: [],
+    debugMode: false
   },
   metrics: {
     totalPlayers: 0,
@@ -170,7 +171,8 @@ function getPlayerState(guestId) {
     actionPoints: player.actionPoints,
     activeTimers: player.activeTimers,
     worldInfo: {
-      currentTick: gameState.world.currentTick
+      currentTick: gameState.world.currentTick,
+      debugMode: gameState.world.debugMode
     }
   };
 }
@@ -187,24 +189,29 @@ function updateActivePlayersCount() {
 
 // Game tick loop (runs every second)
 function gameTick() {
-  gameState.world.currentTick++;
-  gameState.metrics.ticksProcessed++;
+  // Process multiple ticks if debug mode is enabled
+  const ticksToProcess = gameState.world.debugMode ? gameConfig.debug.speedMultiplier : 1;
   
-  // Process each player
-  for (const playerId in gameState.players) {
-    const player = gameState.players[playerId];
+  for (let i = 0; i < ticksToProcess; i++) {
+    gameState.world.currentTick++;
+    gameState.metrics.ticksProcessed++;
     
-    // Regenerate action points
-    regenerateActionPoints(player);
-    
-    // Generate resources
-    generateResources(player);
-    
-    // Process timers
-    processTimers(player);
+    // Process each player
+    for (const playerId in gameState.players) {
+      const player = gameState.players[playerId];
+      
+      // Regenerate action points
+      regenerateActionPoints(player);
+      
+      // Generate resources
+      generateResources(player);
+      
+      // Process timers
+      processTimers(player);
+    }
   }
   
-  // Broadcast state updates to connected players
+  // Broadcast state updates to connected players (once per real second)
   broadcastStateUpdates();
   
   // Clean up inactive players (older than 30 days)
@@ -552,12 +559,14 @@ function processExpandStorageAction(player, data) {
 
 // Process toggle debug action (placeholder)
 function processToggleDebugAction(player) {
-  // For now, just acknowledge the action
-  // In a full implementation, this might toggle server-side debug features
+  // Toggle debug mode for the entire world
+  gameState.world.debugMode = !gameState.world.debugMode;
+  
   return {
     success: true,
     data: {
-      message: 'Debug mode toggle acknowledged (server-side debug not implemented yet)'
+      message: `Debug mode ${gameState.world.debugMode ? 'enabled' : 'disabled'}`,
+      debugMode: gameState.world.debugMode
     }
   };
 }

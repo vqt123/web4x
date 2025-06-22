@@ -8,6 +8,7 @@ class GameClient {
     this.connected = false;
     this.gameState = null;
     this.worldInfo = null;
+    this.sessionStartTime = Date.now();
     
     // Initialize client
     this.init();
@@ -119,6 +120,9 @@ class GameClient {
         playerCountElement.textContent = `Players online: ${this.worldInfo.playerCount}`;
       }
     }
+    
+    // Update time displays
+    this.updateTimeDisplays();
   }
   
   updateResourceDisplay(type, resource) {
@@ -162,6 +166,40 @@ class GameClient {
       
       activeTimersDiv.appendChild(entry);
     });
+  }
+  
+  updateTimeDisplays() {
+    // Update wall clock using server time (currentTick)
+    if (this.worldInfo && typeof this.worldInfo.currentTick === 'number') {
+      const totalSeconds = this.worldInfo.currentTick;
+      const days = Math.floor(totalSeconds / (24 * 3600));
+      const hours = Math.floor((totalSeconds % (24 * 3600)) / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+      
+      const wallClock = document.getElementById('wall-clock');
+      if (wallClock) {
+        wallClock.textContent = `Day ${days + 1}, ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      }
+    }
+    
+    // Update debug panel
+    const debugModeIndicator = document.getElementById('debug-mode-indicator');
+    const tickCounter = document.getElementById('tick-counter');
+    const sessionTime = document.getElementById('session-time');
+    
+    if (debugModeIndicator && this.worldInfo) {
+      debugModeIndicator.textContent = this.worldInfo.debugMode ? 'DEBUG MODE: 3600x' : 'Normal Speed';
+    }
+    
+    if (tickCounter && this.worldInfo) {
+      tickCounter.textContent = `Tick: ${this.worldInfo.currentTick || 0}`;
+    }
+    
+    if (sessionTime) {
+      const sessionSeconds = Math.floor((Date.now() - this.sessionStartTime) / 1000);
+      sessionTime.textContent = `Session: ${sessionSeconds}s`;
+    }
   }
   
   sendAction(actionType, data = {}) {
