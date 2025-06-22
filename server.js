@@ -673,64 +673,97 @@ function processBotActions() {
     
     // Bot has enough action points to do something
     if (player.actionPoints.current < 5) {
-      // Schedule next check in 30-60 seconds
-      player.nextActionTime = now + (30 + Math.random() * 30) * 1000;
+      // Schedule next check in 15-30 seconds (more frequent checks)
+      player.nextActionTime = now + (15 + Math.random() * 15) * 1000;
       continue;
     }
     
-    // Decide what action to take based on AI strategy
+    // Smart bot decision making
     let actionTaken = false;
     
-    if (player.aiStrategy === 'explorer') {
-      // Explorer bots prefer to explore
-      if (player.actionPoints.current >= gameConfig.actions.explore.cost && Math.random() > 0.3) {
-        processExploreAction(player);
+    // Check if storage expansion is critically needed (60% full instead of 80%)
+    for (const [resourceType, resource] of Object.entries(player.resources)) {
+      if (resource.amount > resource.cap * 0.6 && player.actionPoints.current >= gameConfig.actions.expandStorage.cost) {
+        processExpandStorageAction(player, { resourceType });
         actionTaken = true;
+        break;
       }
-    } else {
-      // Developer bots prefer to develop
-      const canDevelop = Object.values(player.resources).some(resource => 
-        resource.capacity > resource.generation
-      );
-      
-      if (canDevelop && player.actionPoints.current >= gameConfig.actions.develop.cost && Math.random() > 0.4) {
-        // Find a resource to develop
-        for (const [resourceType, resource] of Object.entries(player.resources)) {
-          if (resource.capacity > resource.generation) {
-            processDevelopAction(player, { resourceType });
+    }
+    
+    // If no storage expansion needed, proceed with strategy
+    if (!actionTaken) {
+      if (player.aiStrategy === 'explorer') {
+        // Explorer bots: 90% chance to explore if they have AP (more aggressive)
+        if (player.actionPoints.current >= gameConfig.actions.explore.cost && Math.random() > 0.1) {
+          processExploreAction(player);
+          actionTaken = true;
+        }
+        // Also develop if they have unused capacity (20% chance)
+        else if (!actionTaken && Math.random() > 0.8) {
+          const bestResource = findBestResourceToDevelop(player);
+          if (bestResource && player.actionPoints.current >= gameConfig.actions.develop.cost) {
+            processDevelopAction(player, { resourceType: bestResource });
             actionTaken = true;
-            break;
           }
         }
+      } else {
+        // Developer bots: prioritize developing existing capacity
+        const bestResource = findBestResourceToDevelop(player);
+        if (bestResource && player.actionPoints.current >= gameConfig.actions.develop.cost && Math.random() > 0.1) {
+          processDevelopAction(player, { resourceType: bestResource });
+          actionTaken = true;
+        }
+        // Also explore for new capacity (30% chance)
+        else if (!actionTaken && player.actionPoints.current >= gameConfig.actions.explore.cost && Math.random() > 0.7) {
+          processExploreAction(player);
+          actionTaken = true;
+        }
       }
     }
     
-    // Fallback: explore if no other action taken
-    if (!actionTaken && player.actionPoints.current >= gameConfig.actions.explore.cost) {
-      processExploreAction(player);
-      actionTaken = true;
-    }
-    
-    // Storage expansion for high-resource bots
-    if (!actionTaken && player.actionPoints.current >= gameConfig.actions.expandStorage.cost) {
-      for (const [resourceType, resource] of Object.entries(player.resources)) {
-        if (resource.amount > resource.cap * 0.8) { // Expand when 80% full
-          processExpandStorageAction(player, { resourceType });
+    // Fallback: always take an action if AP allows
+    if (!actionTaken) {
+      if (player.actionPoints.current >= gameConfig.actions.develop.cost) {
+        const bestResource = findBestResourceToDevelop(player);
+        if (bestResource) {
+          processDevelopAction(player, { resourceType: bestResource });
           actionTaken = true;
-          break;
         }
+      }
+      
+      if (!actionTaken && player.actionPoints.current >= gameConfig.actions.explore.cost) {
+        processExploreAction(player);
+        actionTaken = true;
       }
     }
     
     if (actionTaken) {
-      // Schedule next action in 10-30 seconds
-      player.nextActionTime = now + (10 + Math.random() * 20) * 1000;
+      // Schedule next action in 8-20 seconds (more frequent actions)
+      player.nextActionTime = now + (8 + Math.random() * 12) * 1000;
       player.lastSeen = now;
     } else {
-      // No valid action, wait longer
-      player.nextActionTime = now + (60 + Math.random() * 60) * 1000;
+      // No valid action, wait shorter time
+      player.nextActionTime = now + (30 + Math.random() * 30) * 1000;
     }
   }
+}
+
+// Helper function to find the best resource to develop (prioritizes highest generation potential)
+function findBestResourceToDevelop(player) {
+  let bestResource = null;
+  let bestGap = 0;
+  
+  for (const [resourceType, resource] of Object.entries(player.resources)) {
+    if (resource.capacity > resource.generation) {
+      const gap = resource.capacity - resource.generation;
+      if (gap > bestGap) {
+        bestGap = gap;
+        bestResource = resourceType;
+      }
+    }
+  }
+  
+  return bestResource;
 }
 
 function initializeBots() {
