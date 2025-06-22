@@ -208,41 +208,25 @@ Resource development: timer countdown
 6. **Inclusive Competition**: Leaderboard focus means everyone can play to the end
 7. **Positive Reinforcement**: No elimination or bankruptcy - always moving forward
 
-## Multiplayer Design Considerations
+## Technical Architecture (For Development)
 
-### Guest Account System
-- **Frictionless Entry**: No registration required to start playing
-- **Persistent Progress**: Guest ID stored in localStorage allows returning
-- **Future Upgrade Path**: Guests can optionally create accounts later
-- **Privacy First**: No personal data collected for guest accounts
+### Client-Server System
+- **Development Setup**: Node.js server required for testing and development
+- **Guest ID System**: Persistent localStorage-based accounts for testing
+- **Server Authority**: All game logic runs server-side for consistency
+- **Real-time Updates**: WebSocket communication for responsive gameplay
 
-### Single World Design (MVP)
-- **Shared Experience**: All players in same world initially
-- **Continuous Play**: World persists even when individuals offline
-- **Real-time Updates**: See other players' progress live
-- **No Waiting**: Join and play immediately, no lobby/matchmaking
+### Single-Player Focus
+- **Core Experience**: Designed as engaging single-player progression
+- **Extended Sessions**: 2-week gameplay cycles with daily engagement
+- **Progression Depth**: Research systems and advanced mechanics
+- **Pacing Optimization**: Balanced action costs and meaningful decisions
 
-### Multiplayer Mechanics
-- **Asynchronous Play**: 2-week matches support different play schedules
-- **Visible Progress**: See when others make discoveries or developments
-- **Indirect Competition**: No direct player conflict in MVP
-- **Shared Events**: World discoveries benefit from collective exploration
-- **Leaderboard**: Constant visibility of relative performance
-
-### Technical Considerations
-- **Server Authority**: All game logic server-side prevents cheating
-- **Optimistic UI**: Immediate feedback with server validation
-- **Graceful Degradation**: Game playable even with connection issues
-- **Scalability Path**: Architecture supports future multi-world expansion
-
-### Future Multiplayer Features
-- **Multiple Worlds**: 14-day cycles with different start times
-- **World Selection**: Choose competitive or casual worlds
-- **Friends System**: Join worlds with specific players
-- **Trading**: Direct resource exchange between players
-- **Alliances**: Formal cooperation mechanics
-- **World Chat**: Optional communication channels
-- **Tournaments**: Special event worlds with unique rules
+### Code Organization
+- **File Size Limit**: Maximum 250 lines per file
+- **Modular Design**: Separate components for game logic, UI, and utilities
+- **Clean Architecture**: Single responsibility principle for each module
+- **Maintainable Code**: Clear separation of concerns and consistent patterns
 
 ## Implementation Notes
 
@@ -261,9 +245,9 @@ Resource development: timer countdown
 
 ## Next Development Phases
 1. **Research System**: Configurable AP cost action with efficiency multipliers
-2. **Trading Mechanics**: Resource conversion and player interaction
-3. **Competition Elements**: Leaderboards and comparative progress
-4. **Advanced Actions**: Late-game mechanics and mega-projects
+2. **Advanced Resource Mechanics**: Resource conversion and complex chains
+3. **Long-term Progression**: Extended gameplay systems and goals
+4. **Advanced Actions**: Late-game mechanics and strategic depth
 
 ## Current Balance Questions
 

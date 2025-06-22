@@ -4,11 +4,11 @@
 Turn-based, asynchronous web 4X game designed for 2-week matches with multiple daily sessions. Abstract resource mechanics focused on capacity discovery and development.
 
 ## Architecture
-- **Current**: Single HTML file (`/index.html`) - Complete single-player implementation
-- **Transitioning to**: Client-server architecture for multiplayer support
+- **Current**: Client-server architecture (Node.js + Socket.io) - Required for testing
+- **Focus**: Single-player experience with refined pacing and progression
 - **Tick-based system**: Clean time management with acceleration support
 - **Debug mode**: Speed acceleration for testing (see config)
-- **Multiplayer**: Node.js + Socket.io server with guest accounts (see @client-server-architecture.md)
+- **Code organization**: Keep all files under 250 lines, refactor into smaller components as needed
 
 ## Key Documentation
 
@@ -16,17 +16,22 @@ Turn-based, asynchronous web 4X game designed for 2-week matches with multiple d
 - **@game-design-doc.md** - Core game design, mechanics, and progression
 - **@development-plan.md** - Implementation phases and testing protocols
 
-### Multiplayer Architecture
-- **@client-server-architecture.md** - Technical architecture for multiplayer
-- **@multiplayer-development-plan.md** - Step-by-step multiplayer implementation
+### Testing Architecture
+- **@client-server-architecture.md** - Technical architecture (needed for testing)
+- **@multiplayer-development-plan.md** - Setup instructions for development server
+
+### Code Organization
+- **File size limit**: Maximum 250 lines per file
+- **Component separation**: Split large files into focused, single-responsibility modules
+- **Refactoring priority**: Break down complex functions and maintain clean architecture
 
 ### Configuration
 - **@game-config.json** - All balance parameters and game constants
 
 ### Development Status
 - **Phase 1 Enhanced**: Core loop with resource management complete
-- **Current**: Tick-based architecture with storage caps and debug tools
-- **Next**: Multiplayer implementation (Phase 2) - see @multiplayer-development-plan.md
+- **Current**: Single-player experience refinement and pacing optimization
+- **Focus**: Research system, advanced mechanics, and long-term progression balance
 
 ## Quick Start
 
@@ -42,7 +47,7 @@ python3 -m http.server 8000 &
 pkill -f "python3 -m http.server 8000"
 ```
 
-### Multiplayer (in development)
+### Development Server (for testing)
 ```bash
 # Install dependencies (first time)
 npm install
@@ -71,20 +76,20 @@ pkill -f "nodemon.*server.js" || pkill -f "node.*server.js"
 - Auto-completion: Timers complete automatically
 - Time displays: Wall clock, session timer, tick counter
 
-### Multiplayer Architecture
+### Client-Server Architecture (Testing)
 - Guest ID system: Persistent accounts using localStorage + UUID
 - WebSocket communication: Real-time state synchronization
 - Server authority: All game logic runs server-side
-- In-memory storage: No database required for MVP
+- In-memory storage: No database required for development
 
 ## Implementation Priorities
 1. ✅ Core explore→develop loop
 2. ✅ Resource management with caps
 3. ✅ Debug speed mode
-4. ✅ Multiplayer foundation (Phase 2 - complete)
-5. 🔄 Research system
-6. 🔄 Trading mechanics
-7. 🔄 Multiple worlds & matchmaking
+4. ✅ Client-server architecture (for testing)
+5. 🔄 Research system and tech progression
+6. 🔄 Advanced single-player mechanics
+7. 🔄 Long-term progression and pacing refinement
 
 ## Testing Requirements
 
