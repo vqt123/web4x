@@ -162,6 +162,29 @@ function createNewPlayer(guestId) {
 }
 
 // Helper function to get player state for sending to client
+function calculatePlayerScore(player) {
+  // Score is the sum of all resources
+  return Math.floor(
+    player.resources.food.amount +
+    player.resources.production.amount +
+    player.resources.gold.amount
+  );
+}
+
+function getLeaderboard() {
+  const players = Object.values(gameState.players);
+  
+  return players
+    .map(player => ({
+      guestId: player.guestId,
+      name: player.name || (player.isBot ? player.name : `Player ${player.guestId.slice(-8)}`),
+      score: calculatePlayerScore(player),
+      isBot: player.isBot || false
+    }))
+    .sort((a, b) => b.score - a.score) // Sort by score descending
+    .slice(0, 10); // Top 10 players
+}
+
 function getPlayerState(guestId) {
   const player = gameState.players[guestId];
   if (!player) return null;
@@ -172,7 +195,9 @@ function getPlayerState(guestId) {
     activeTimers: player.activeTimers,
     worldInfo: {
       currentTick: gameState.world.currentTick,
-      debugMode: gameState.world.debugMode
+      debugMode: gameState.world.debugMode,
+      leaderboard: getLeaderboard(),
+      playerCount: Object.keys(gameState.players).length
     }
   };
 }
@@ -582,6 +607,146 @@ function getDiscoveryMessage(resourceType) {
   return messages[resourceType] || "You've made an important discovery!";
 }
 
+// Bot AI System
+const botNames = [
+  'Explorer_Alpha', 'Mining_Beta', 'Trade_Gamma', 'Builder_Delta', 'Scout_Epsilon',
+  'Harvester_Zeta', 'Engineer_Eta', 'Merchant_Theta', 'Pioneer_Iota', 'Strategist_Kappa'
+];
+
+function createBot(botName) {
+  const botId = `bot-${botName.toLowerCase()}-${Date.now()}`;
+  
+  const bot = {
+    guestId: botId,
+    isBot: true,
+    name: botName,
+    socketId: null, // Bots don't need socket connections
+    lastSeen: Date.now(),
+    resources: {
+      food: {
+        amount: gameConfig.resources.food.startingAmount,
+        generation: gameConfig.resources.food.startingGeneration,
+        capacity: gameConfig.resources.food.startingCapacity,
+        cap: gameConfig.resources.food.storageCap
+      },
+      production: {
+        amount: gameConfig.resources.production.startingAmount,
+        generation: gameConfig.resources.production.startingGeneration,
+        capacity: gameConfig.resources.production.startingCapacity,
+        cap: gameConfig.resources.production.storageCap
+      },
+      gold: {
+        amount: gameConfig.resources.gold.startingAmount,
+        generation: gameConfig.resources.gold.startingGeneration,
+        capacity: gameConfig.resources.gold.startingCapacity,
+        cap: gameConfig.resources.gold.storageCap
+      }
+    },
+    actionPoints: {
+      current: gameConfig.actionPoints.starting,
+      max: gameConfig.actionPoints.maximum
+    },
+    activeTimers: [],
+    // Bot AI preferences
+    aiStrategy: Math.random() > 0.5 ? 'explorer' : 'developer', // Random strategy
+    nextActionTime: Date.now() + Math.random() * 10000 // Random delay 0-10 seconds
+  };
+  
+  gameState.players[botId] = bot;
+  gameState.metrics.totalPlayers++;
+  
+  console.log(`🤖 Bot created: ${botName} (${botId}) - Strategy: ${bot.aiStrategy}`);
+  return bot;
+}
+
+function processBotActions() {
+  const now = Date.now();
+  
+  for (const playerId in gameState.players) {
+    const player = gameState.players[playerId];
+    
+    // Only process bots
+    if (!player.isBot) continue;
+    
+    // Check if it's time for this bot to act
+    if (now < player.nextActionTime) continue;
+    
+    // Bot has enough action points to do something
+    if (player.actionPoints.current < 5) {
+      // Schedule next check in 30-60 seconds
+      player.nextActionTime = now + (30 + Math.random() * 30) * 1000;
+      continue;
+    }
+    
+    // Decide what action to take based on AI strategy
+    let actionTaken = false;
+    
+    if (player.aiStrategy === 'explorer') {
+      // Explorer bots prefer to explore
+      if (player.actionPoints.current >= gameConfig.actions.explore.cost && Math.random() > 0.3) {
+        processExploreAction(player);
+        actionTaken = true;
+      }
+    } else {
+      // Developer bots prefer to develop
+      const canDevelop = Object.values(player.resources).some(resource => 
+        resource.capacity > resource.generation
+      );
+      
+      if (canDevelop && player.actionPoints.current >= gameConfig.actions.develop.cost && Math.random() > 0.4) {
+        // Find a resource to develop
+        for (const [resourceType, resource] of Object.entries(player.resources)) {
+          if (resource.capacity > resource.generation) {
+            processDevelopAction(player, { resourceType });
+            actionTaken = true;
+            break;
+          }
+        }
+      }
+    }
+    
+    // Fallback: explore if no other action taken
+    if (!actionTaken && player.actionPoints.current >= gameConfig.actions.explore.cost) {
+      processExploreAction(player);
+      actionTaken = true;
+    }
+    
+    // Storage expansion for high-resource bots
+    if (!actionTaken && player.actionPoints.current >= gameConfig.actions.expandStorage.cost) {
+      for (const [resourceType, resource] of Object.entries(player.resources)) {
+        if (resource.amount > resource.cap * 0.8) { // Expand when 80% full
+          processExpandStorageAction(player, { resourceType });
+          actionTaken = true;
+          break;
+        }
+      }
+    }
+    
+    if (actionTaken) {
+      // Schedule next action in 10-30 seconds
+      player.nextActionTime = now + (10 + Math.random() * 20) * 1000;
+      player.lastSeen = now;
+    } else {
+      // No valid action, wait longer
+      player.nextActionTime = now + (60 + Math.random() * 60) * 1000;
+    }
+  }
+}
+
+function initializeBots() {
+  console.log('🤖 Initializing AI bots...');
+  
+  for (const botName of botNames) {
+    createBot(botName);
+  }
+  
+  console.log(`✅ Created ${botNames.length} AI bots`);
+  
+  // Start bot AI processing every 5 seconds
+  setInterval(processBotActions, 5000);
+  console.log('🧠 Bot AI system started');
+}
+
 // Start the game tick loop
 setInterval(gameTick, 1000);
 
@@ -591,6 +756,9 @@ server.listen(PORT, () => {
   console.log(`📊 Game tick loop started`);
   console.log(`🌍 Single world mode active`);
   console.log(`👥 Ready for players at http://localhost:${PORT}`);
+  
+  // Initialize AI bots after server is ready
+  setTimeout(initializeBots, 2000); // 2 second delay
 });
 
 // Graceful shutdown

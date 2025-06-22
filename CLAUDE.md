@@ -30,8 +30,9 @@ Turn-based, asynchronous web 4X game designed for 2-week matches with multiple d
 
 ### Development Status
 - **Phase 1 Enhanced**: Core loop with resource management complete
-- **Current**: Single-player experience refinement and pacing optimization
-- **Focus**: Research system, advanced mechanics, and long-term progression balance
+- **Phase 2**: AI bot system and real-time leaderboard complete
+- **Current**: Dynamic competitive environment with autonomous AI players
+- **Focus**: Research system, advanced mechanics, and progression depth
 
 ## Quick Start
 
@@ -67,6 +68,8 @@ pkill -f "nodemon.*server.js" || pkill -f "node.*server.js"
 2. **Develop** - Convert capacity to generation
 3. **Expand Storage** - Increase resource caps
 4. **Debug Toggle** - Speed acceleration for testing
+5. **Compete** - Real-time leaderboard ranking by total resources
+6. **AI Competition** - 10 autonomous bots creating dynamic world
 
 ## Technical Notes
 
@@ -87,9 +90,11 @@ pkill -f "nodemon.*server.js" || pkill -f "node.*server.js"
 2. ✅ Resource management with caps
 3. ✅ Debug speed mode
 4. ✅ Client-server architecture (for testing)
-5. 🔄 Research system and tech progression
-6. 🔄 Advanced single-player mechanics
-7. 🔄 Long-term progression and pacing refinement
+5. ✅ AI bot system (10 autonomous players)
+6. ✅ Real-time leaderboard with resource-based scoring
+7. 🔄 Research system and tech progression
+8. 🔄 Advanced single-player mechanics
+9. 🔄 Long-term progression and pacing refinement
 
 ## Testing Requirements
 

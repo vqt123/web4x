@@ -2,11 +2,12 @@
 
 ## Current Status
 - Date: 2025-06-22
-- Phase: ✅ Phase 2 COMPLETED - Client-Server Architecture (for testing)
-- Status: Architecture implemented, focus shifted to single-player experience
-- Current Goal: Single-player pacing refinement and research system
+- Phase: ✅ Phase 2.5 COMPLETED - AI Bot System & Leaderboard
+- Status: Dynamic competitive environment with 10 autonomous AI players
+- Current Goal: Research system and advanced progression mechanics
 - Configuration: All balance parameters in @game-config.json
 - Code Quality: Maximum 250 lines per file, refactor as needed
+- New Features: Real-time leaderboard, AI bot competition
 
 ## Phase 1: Minutes 0-5 - Discovery Phase
 
@@ -198,28 +199,47 @@ Transform the single-player game into a multiplayer experience with minimal comp
 - Real-time synchronization across clients
 - Comprehensive testing infrastructure
 
-## Future Phases (Refocused on Single-Player)
+## Phase 2.5: AI Bot System & Leaderboard ✅ COMPLETED
+
+### Overview
+Create a dynamic, living world with autonomous AI players and competitive elements.
+
+### Implementation Results
+- **10 AI Bots**: Autonomous players with different strategies (explorer vs developer)
+- **Bot AI Logic**: Smart decision-making based on resource states and action points
+- **Real-time Leaderboard**: Score based on sum of all resources (food + production + gold)
+- **Dynamic Competition**: Bots take actions every 10-30 seconds, creating an active world
+- **Visual Distinction**: Bots highlighted in orange, current player in green
+- **Top 10 Display**: Real-time ranking with medal emojis for top 3 positions
+
+### Bot Strategies
+- **Explorer Bots**: Prefer exploration actions to discover new capacity
+- **Developer Bots**: Focus on developing existing capacity into generation
+- **Smart Expansion**: Bots expand storage when resources reach 80% capacity
+- **Adaptive Timing**: Random delays (10-30 seconds) for natural behavior
+
+## Future Phases (Enhanced Competitive Experience)
 
 ### Phase 3: Research & Progression System
 - Research system with tech tree
-- Advanced resource mechanics
-- Long-term progression goals
-- Enhanced decision complexity
-- Efficiency multipliers
+- Advanced resource mechanics and multipliers
+- Long-term progression goals spanning multiple sessions
+- Enhanced decision complexity with strategic depth
+- Efficiency bonuses and specialization paths
 
-### Phase 4: Advanced Single-Player Features
-- Extended time periods (multiple days/weeks)
-- Complex resource chains
-- Achievement system
-- Multiple strategic paths
-- End-game content and scoring
+### Phase 4: Advanced Competitive Features
+- Extended competition periods (multi-day tournaments)
+- Advanced bot AI with more sophisticated strategies
+- Achievement system with competitive milestones
+- Multiple scoring mechanisms (efficiency, speed, total resources)
+- Seasonal leaderboards and reset cycles
 
-### Phase 5: Polish & Optimization
-- Mobile-responsive design
-- Performance optimization
-- Code refactoring (250-line limit)
-- Enhanced UI/UX
-- Comprehensive testing
+### Phase 5: Polish & Advanced AI
+- Mobile-responsive design for competitive play
+- Performance optimization for large player counts
+- Code refactoring (250-line limit) for maintainability
+- Enhanced AI with machine learning capabilities
+- Comprehensive testing and balance refinement
 
 ## Technical Decisions Log
 

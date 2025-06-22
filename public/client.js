@@ -121,6 +121,9 @@ class GameClient {
       }
     }
     
+    // Update leaderboard
+    this.updateLeaderboard();
+    
     // Update time displays
     this.updateTimeDisplays();
   }
@@ -200,6 +203,40 @@ class GameClient {
       const sessionSeconds = Math.floor((Date.now() - this.sessionStartTime) / 1000);
       sessionTime.textContent = `Session: ${sessionSeconds}s`;
     }
+  }
+  
+  updateLeaderboard() {
+    if (!this.worldInfo || !this.worldInfo.leaderboard) return;
+    
+    const leaderboardList = document.getElementById('leaderboard-list');
+    if (!leaderboardList) return;
+    
+    leaderboardList.innerHTML = '';
+    
+    this.worldInfo.leaderboard.forEach((entry, index) => {
+      const entryDiv = document.createElement('div');
+      entryDiv.className = 'leaderboard-entry';
+      
+      // Highlight current player
+      if (entry.guestId === this.guestId) {
+        entryDiv.className += ' current-player';
+      }
+      
+      // Highlight bots
+      if (entry.isBot) {
+        entryDiv.className += ' bot';
+      }
+      
+      const rank = index + 1;
+      const rankEmoji = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `${rank}.`;
+      
+      entryDiv.innerHTML = `
+        <span>${rankEmoji} ${entry.name}</span>
+        <span>${entry.score} pts</span>
+      `;
+      
+      leaderboardList.appendChild(entryDiv);
+    });
   }
   
   sendAction(actionType, data = {}) {

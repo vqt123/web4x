@@ -225,6 +225,31 @@
             margin: 2px 0;
         }
         
+        .leaderboard {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ff00ff;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        .leaderboard-entry {
+            font-size: 12px;
+            color: #ff00ff;
+            margin: 2px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .leaderboard-entry.current-player {
+            color: #00ff00;
+            font-weight: bold;
+        }
+        
+        .leaderboard-entry.bot {
+            color: #ffaa00;
+        }
+        
         .welcome-popup {
             position: fixed;
             top: 0;
@@ -316,6 +341,12 @@
                 TOGGLE DEBUG MODE<br>
                 <small>Speed up time: 1 hour = 1 second</small>
             </button>
+        </div>
+        
+        <!-- Leaderboard -->
+        <div class="leaderboard">
+            <h4 style="margin: 0 0 10px 0; color: #ff00ff;">🏆 Leaderboard</h4>
+            <div id="leaderboard-list"></div>
         </div>
         
         <!-- World events -->

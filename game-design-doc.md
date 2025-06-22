@@ -3,7 +3,7 @@
 ## Core Concept
 A turn-based, action-per-time based web 4X game inspired by RTS mechanics, designed to be played over a 2-week period with multiple short sessions per day. The game abstracts away spatial elements, focusing on resource capacity discovery and development through strategic action point allocation.
 
-**Current Implementation Status**: Phase 1 Enhanced - Core mechanics with resource management and debug tools complete.
+**Current Implementation Status**: Phase 2.5 - Core mechanics, AI bot system, and real-time leaderboard complete.
 
 ## Game Duration & Pacing
 - **Total Game Length**: 14 days per match
@@ -243,11 +243,32 @@ Resource development: timer countdown
 4. 🔄 Action point regeneration balance
 5. 🔄 Storage expansion economics
 
+## AI Bot System & Competition ✅ IMPLEMENTED
+
+### Dynamic World Population
+- **10 Autonomous AI Bots**: Create a living, active world environment
+- **Diverse Strategies**: Mix of explorer and developer bot personalities
+- **Smart Decision Making**: Bots analyze their resources and take optimal actions
+- **Natural Behavior**: Random timing delays (10-30 seconds) create realistic play patterns
+
+### Real-time Leaderboard
+- **Score Calculation**: Sum of all resources (food + production + gold)
+- **Live Updates**: Rankings update in real-time as players and bots take actions
+- **Visual Distinction**: Current player highlighted in green, bots in orange
+- **Top 10 Display**: Medal emojis (🥇🥈🥉) for top 3 positions
+
+### Competitive Engagement
+- **Immediate Context**: See where you rank among all players
+- **Dynamic Competition**: Bots constantly taking actions creates urgency
+- **Achievement Motivation**: Clear progression goals through leaderboard climbing
+- **Social Proof**: Understand what strategies are working through bot behavior
+
 ## Next Development Phases
 1. **Research System**: Configurable AP cost action with efficiency multipliers
 2. **Advanced Resource Mechanics**: Resource conversion and complex chains
-3. **Long-term Progression**: Extended gameplay systems and goals
-4. **Advanced Actions**: Late-game mechanics and strategic depth
+3. **Enhanced AI**: More sophisticated bot strategies and decision trees
+4. **Long-term Progression**: Extended gameplay systems and tournament cycles
+5. **Advanced Actions**: Late-game mechanics and strategic depth
 
 ## Current Balance Questions
 
