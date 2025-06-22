@@ -1,0 +1,46 @@
+# SvelteKit Development Rules
+
+## Framework Guidelines
+
+- Use SvelteKit's file-based routing system
+- Follow naming conventions: +page.svelte, +layout.svelte, +page.server.js, +server.js
+- Prefer SvelteKit's built-in features over external libraries when possible
+- Use TypeScript for better type safety and development experience
+
+## Code Structure
+
+- Place reusable components in `src/lib/components/`
+- Use `src/lib/stores.js` for global state management
+- Put utility functions in `src/lib/utils/`
+- Keep API routes in `src/routes/api/`
+
+## SvelteKit Patterns
+
+- Use `export let` for component props
+- Leverage Svelte's reactivity with `$:` statements
+- Use SvelteKit's load functions for data fetching
+- Implement form actions for server-side form handling
+- Use `$lib` alias for internal imports
+
+## Game Development Specific
+
+- Use Svelte stores for game state (resources, player data, etc.)
+- Leverage SvelteKit's real-time capabilities for multiplayer features
+- Use `+page.server.js` for game logic and database operations
+- Implement WebSocket connections for real-time updates
+- Use Svelte's animation and transition features for game UI
+
+## Code Quality
+
+- Always include proper TypeScript types
+- Use Svelte's built-in accessibility features
+- Implement proper error boundaries with +error.svelte
+- Follow Svelte's reactive programming patterns
+- Keep components small and focused
+
+## File Organization
+
+- Group related functionality in route-based folders
+- Use descriptive component names
+- Implement proper CSS scoping with Svelte's built-in styles
+- Use CSS custom properties for theming
