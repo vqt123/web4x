@@ -1,0 +1,62 @@
+import type { GameConfig } from './types/game.js';
+
+export const gameConfig: GameConfig = {
+	actionPoints: {
+		starting: 150,
+		maximum: 250,
+		regenerationPerHour: 10
+	},
+	resources: {
+		food: {
+			startingAmount: 10,
+			startingGeneration: 5,
+			startingCapacity: 5,
+			storageCap: 50
+		},
+		production: {
+			startingAmount: 6,
+			startingGeneration: 3,
+			startingCapacity: 3,
+			storageCap: 30
+		},
+		gold: {
+			startingAmount: 2,
+			startingGeneration: 1,
+			startingCapacity: 1,
+			storageCap: 20
+		}
+	},
+	actions: {
+		explore: {
+			cost: 5,
+			discoveryRates: {
+				food: 0.6,
+				production: 0.3,
+				gold: 0.1
+			}
+		},
+		develop: {
+			cost: 10,
+			timerTicks: 10,
+			productionTimerTicks: 7200
+		},
+		expandStorage: {
+			cost: 20,
+			capacityIncrease: 20
+		}
+	},
+	timers: {
+		development: {
+			testingTicks: 10,
+			productionTicks: 7200
+		},
+		research: {
+			testingTicks: 40,
+			productionTicks: 14400
+		}
+	},
+	debug: {
+		speedMultiplier: 3600,
+		defaultMode: false
+	}
+};
