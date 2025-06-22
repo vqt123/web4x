@@ -110,18 +110,7 @@ nohup node test-client.js > test.log 2>&1 &
 
 ### UI Testing
 **IMPORTANT**: WSL/Windows environments cannot run Puppeteer/Chrome directly.
-**Required**: Use Docker for all UI testing:
-
-```bash
-# Build Docker test environment
-docker build -t web4x-test -f Dockerfile.test .
-
-# Run UI tests in Docker
-docker run --rm -p 3000:3000 web4x-test npm run test:ui
-
-# Run multiplayer tests
-docker run --rm -p 3000:3000 web4x-test npm run test:multiplayer
-```
+**Alternative**: UI testing can be performed manually or using browser-based testing tools.
 
 ### Server-Side Testing
 WebSocket and server logic can be tested directly with Node.js clients:
